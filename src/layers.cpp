@@ -14,10 +14,10 @@
 #include "flappie_stdlib.h"
 #include "util.h"
 
-//#include "hw/ekf_hw.h"
-//#include "ref_model/ekf_sw.h"
-//#include "hw/vio_regs.h"
-//#include "hw/vio_utils.h"
+#include "hw/ekf_hw.h"
+#include "ref_model/ekf_sw.h"
+#include "hw/vio_regs.h"
+#include "hw/vio_utils.h"
 
 
 /**  Apply tanh to a matrix element-wise
@@ -717,7 +717,7 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
      * xF     is [3 * size]
      * ostate is [size]
      */
-    //ekf_hw hw;
+    ekf_hw hw;
     assert(NULL != x);
     assert(NULL != sW);
     const size_t size = istate->nr;
@@ -763,28 +763,28 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
       PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
       exit(1);
     }
-    print_flag = 0;
+    print_flag = 0;*/
 
-    float *a = (float *) vio_malloc(sW->nr * sW->nc *sizeof(float)); //256x768
-    float *b = (float *) vio_malloc(istate->nr * istate->nc * sizeof(float)); // 256x1
-    float *c = (float *) vio_malloc(xF->nr * xF->nc * sizeof(float)); // 768x1
-    memcpy(a, sW->data.f, sW->nr * sW->nc * sizeof(float));
-    memcpy(b, istate->data.f, istate->nr * istate->nc * sizeof(float));
-    memcpy(c, xF->data.f, xF->nr * xF->nc * sizeof(float)); 
+    /*float *a1 = (float *) vio_malloc(sW->nr * sW->nc *sizeof(float)); //256x768
+    float *b1 = (float *) vio_malloc(istate->nr * istate->nc * sizeof(float)); // 256x1
+    float *c1 = (float *) vio_malloc(xF->nr * xF->nc * sizeof(float)); // 768x1
+    memcpy(a1, sW->data.f, sW->nr * sW->nc * sizeof(float));
+    memcpy(b1, istate->data.f, istate->nr * istate->nc * sizeof(float));
+    memcpy(c1, xF->data.f, xF->nr * xF->nc * sizeof(float)); 
 
     if(!data_available) {
-        hw.mat_mul(a,b,c,c, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
+        hw.mat_mul(a1,b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
         data_available = 1;
     }
     else {
-        hw.mat_mul(NULL, b,c,c, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
+        hw.mat_mul(NULL, b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
     }
  
     
-    memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
-    vio_free(a);
-    vio_free(b);
-    vio_free(c); */
+    memcpy(xF->data.f, c1, xF->nr * xF->nc * sizeof(float));
+    vio_free(a1);
+    vio_free(b1);
+    vio_free(c1); */
 
     cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
 
@@ -809,11 +809,11 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     }
 
     const float ones = 1.0f;
-    float *c1 = ostate->data.f; 
+    float *c2 = ostate->data.f; 
 
     for (size_t i = 0; i < size ; i++) {
-        c1[i] = (-1) * z[i] * c[i] + c[i]; // cin and cout are different. alpha is -1.
-        c1[i] = z[i] * istate->data.f[i] + c1[i]; // cin and cout are same. 
+        c2[i] = (-1) * z[i] * c[i] + c[i]; // cin and cout are different. alpha is -1.
+        c2[i] = z[i] * istate->data.f[i] + c2[i]; // cin and cout are same. 
         //ostate->data.f[i] = z[i] * istate->data.f[i] + (ones - z[i]) * hbar[i];
     }
 

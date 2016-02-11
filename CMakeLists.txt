@@ -90,11 +90,11 @@ add_library (flappie_objects OBJECT
 	src/flappie_matrix.cpp 
         src/flappie_output.cpp
         src/flappie_structures.cpp
-#        src/ref_model/ekf_sw.cpp
-#        src/stimuli_gen/matrix_generation.cpp
-#        src/hw/ekf_hw.cpp
-##        src/hw/vio.cpp
-#        src/hw/vio_priv.cpp
+        src/ref_model/ekf_sw.cpp
+        src/stimuli_gen/matrix_generation.cpp
+        src/hw/ekf_hw.cpp
+        src/hw/vio.cpp
+        src/hw/vio_priv.cpp
 	src/util.cpp)
 set_property(TARGET flappie_objects PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_library (flappie_static STATIC $<TARGET_OBJECTS:flappie_objects>)
