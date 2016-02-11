@@ -677,6 +677,32 @@ flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
 }
 
 
+void PrintMatrix(float* pMatrix, const size_t nR, const size_t nC, const CBLAS_ORDER Order) {
+    unsigned int i, j;
+    if (Order == CblasRowMajor) {
+        for (i = 0; i < nR; i++) {
+            for (j = 0; j < nC; j++) {
+                printf("%f \t ", pMatrix[i * nC + j]); // !!!
+            }
+            printf("\n"); // !!!
+        }
+    } else {
+        for (i = 0; i < nR; i++) {
+            for (j = 0; j < nC; j++) {
+                printf("%f \t ", pMatrix[i + j* nR ]); // !!!
+            }
+            printf("\n"); // !!!
+        }
+    }
+    printf("\n"); // !!!
+}
+
+static int print_flag=0;
+int max(int x, int y){
+  if(x>y) return x;
+  else return y;
+}
+
 void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
                  const_flappie_matrix sW, flappie_matrix xF,
                  flappie_matrix ostate) {
@@ -713,11 +739,29 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
      */
 
     //            order, transa, M, N, alpha, A, lda, X, incX, beta, Y, incY
-    //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
 
+    if(print_flag) {
+      printf("Printing xF matrix before multiplication\n"); 
+      PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
+    }
+
+    //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
     int i;
     for(i=0 ; i<6; i++) { 
         //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc/6, 1.0, sW->data.f+(i*128*256), sW->stride, istate->data.f, 1, 1.0, xF->data.f+i*128, 1);
+        //cblas_sgemv(CblasColMajor, CblasTrans, m, n, alpha, A, m, B, k, beta, C, k);
+        lda = max(1,sW->nr); ldb = max(1,sW->nc); ldc = max(1,sW->nc); 
+        cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, sW->nc, 1 , sW->nr, 1.0, sW->data.f, lda, istate->data.f, ldb, 1.0, xF->data.f, ldc);
+    }
+
+    if(print_flag) {
+      printf("Printing sW matrix\n");
+      PrintMatrix(sW->data.f, sW->nr, sW->nc, CblasColMajor);
+      printf("Printing istate matrix\n");
+      PrintMatrix(istate->data.f, istate->nr, istate->nc, CblasColMajor);
+      printf("Printing xFmatrix after multiplication\n");
+      PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
+      exit(1);
     }
 
     float *a = (float *) vio_malloc(sW->nr * sW->nc *sizeof(float)); //256x768
@@ -727,10 +771,10 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     memcpy(b, istate->data.f, istate->nr * istate->nc * sizeof(float));
     memcpy(c, xF->data.f, xF->nr * xF->nc * sizeof(float));
 
-    for(i=0 ; i<6; i++) { 
-      hw.mat_mul(a+(i*128*256), b, c+i*128, c , sW->nr, sW->nc/6, 1, 1,0, 1.0, 1.0, 128, istate->nr, 128);
+    for(i=0 ; i<1; i++) { 
+      //hw.mat_mul(a+(i*128*256), b, c+i*128, c , sW->nr, sW->nc/6, 1, 1,0, 1.0, 1.0, 128, istate->nr, 128);
     }
-    memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
+    //memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
 
     vio_free(a); 
     vio_free(b); 
