@@ -19,6 +19,7 @@
 #include "hw/vio_regs.h"
 #include "hw/vio_utils.h"
 
+#define STREAMING_ENABLED 1
 
 /**  Apply tanh to a matrix element-wise
  *  @param C Matrix
@@ -628,7 +629,94 @@ flappie_matrix grumod_forward(const_flappie_matrix X, const_flappie_matrix sW,
     return ostate;
 }
 
+#if STREAMING_ENABLED
+void cblas_gemv_wrapper(const_flappie_matrix xCol, flappie_matrix xColTmp, const_flappie_matrix sW, flappie_matrix currState);
 
+flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
+                                flappie_matrix ostate) {
+    RETURN_NULL_IF(NULL == X, NULL);
+    assert(NULL != sW);
+
+    const size_t size = sW->nr;
+    const size_t N = X->nc;
+    assert(X->nr == 3 * size);
+    assert(sW->nc == 3 * size);
+
+    ostate = remake_flappie_matrix(ostate, size, N);
+    RETURN_NULL_IF(NULL == ostate, NULL);
+
+
+    _Mat xCol, currState, nextState;
+    memset(ostate->data.v, 0, ostate->nrq * sizeof(__m128));
+    xCol = *X;
+    currState = *ostate;
+    nextState = *ostate;
+    xCol.nc = currState.nc = nextState.nc = 1;
+    xCol.data.v = X->data.v + (X->nc - 1) * X->nrq;
+    currState.data.v = ostate->data.v;
+    nextState.data.v = ostate->data.v + (ostate->nc - 1) * ostate->nrq;
+
+    flappie_matrix xColTmp = make_flappie_matrix(3 * size, 1);
+    if(NULL == xColTmp)
+        return NULL;
+    grumod_step(&xCol, &currState, sW, xColTmp, &nextState);
+
+    for (int i = 1; i < N; i++) {
+        const size_t index = N - i - 1;
+        xCol.data.f = X->data.f + index * X->nr;
+        currState.data.f = ostate->data.f + (index + 1) * ostate->nr;
+        nextState.data.f = ostate->data.f + index * ostate->nr;
+        cblas_gemv_wrapper(&xCol, xColTmp, sW, &nextState);
+    }
+    xColTmp = free_flappie_matrix(xColTmp);
+    assert(validate_flappie_matrix (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
+    return ostate;
+}
+
+static int data_available=0;
+
+void cblas_gemv_wrapper(const_flappie_matrix Cin, flappie_matrix Cout, const_flappie_matrix A, flappie_matrix Bnext) {
+
+        float *B = Bnext->data.f + Bnext->nr;
+        ekf_hw hw;
+        const size_t size = Bnext->nr;
+        memcpy(Cout->data.f, Cin->data.f, Cin->nr * sizeof(float) );
+        memset(Cout->data.f + size + size, 0, size *sizeof(float));
+
+        // Cin has 3 chunks of update, reset and output gate of size=256 each. The second part of update and reset gate coming from cin.
+        //cblas_sgemv(CblasColMajor, CblasTrans, A->nr, A->nc, 1.0, A->data.f, A->stride, B, 1, 1.0, Cout->data.f, 1);
+        float *a1 = (float *) vio_malloc(A->nr * A->nc *sizeof(float)); //256x768
+        float *b1 = (float *) vio_malloc(Bnext->nr * Bnext->nc * sizeof(float)); // 256x1
+    	float *c1 = (float *) vio_malloc(Cin->nr * Cin->nc * sizeof(float)); // 768x1
+    	memcpy(a1, A->data.f, A->nr * A->nc * sizeof(float));
+    	memcpy(b1, Bnext->data.f, Bnext->nr * Bnext->nc * sizeof(float));
+    	memcpy(c1, Cin->data.f, Cin->nr * Cin->nc * sizeof(float));
+
+    	if(!data_available) {
+        	hw.mat_mul(a1,b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
+        	data_available = 1;
+   	}
+   	else {
+        	hw.mat_mul(NULL, b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
+    	}
+
+
+    	memcpy(Cin->data.f, c1, Cin->nr * Cin->nc * sizeof(float));
+
+        for (size_t i = 0; i < size; i++) {
+                Cout->data.f[i] = LOGISTICF(Cout->data.f[i]); // UPDATE gate z(t)
+                Cout->data.f[size+i] = LOGISTICF(Cout->data.f[size+i]); // RESET gate r(t)
+                Cout->data.f[i+size+size] = TANHF(Cout->data.f[i+size] * Cout->data.f[i+size+size] + Cin->data.f[i+size+size]); // ~O(t)
+                Bnext->data.f[i] = (-1) * Cout->data.f[i] * Cout->data.f[i+size+size] + Cout->data.f[i+size+size];  // O(t) part 2
+                Bnext->data.f[i] = Cout->data.f[i] * B[i] + Bnext->data.f[i];  // O(t) part 1
+        }
+
+    	vio_free(a1);
+    	vio_free(b1);
+    	vio_free(c1); 
+
+}
+#else 
 flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
                                 flappie_matrix ostate) {
     RETURN_NULL_IF(NULL == X, NULL);
@@ -675,7 +763,7 @@ flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
            (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
     return ostate;
 }
-
+#endif
 
 void PrintMatrix(float* pMatrix, const size_t nR, const size_t nC, const CBLAS_ORDER Order) {
     unsigned int i, j;
@@ -698,7 +786,6 @@ void PrintMatrix(float* pMatrix, const size_t nR, const size_t nC, const CBLAS_O
 }
 
 static int print_flag=0;
-static int data_available=0;
 int max(int x, int y){
   if(x>y) return x;
   else return y;
