@@ -717,7 +717,7 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
      * xF     is [3 * size]
      * ostate is [size]
      */
-    ekf_hw hw;
+    //ekf_hw hw;
     assert(NULL != x);
     assert(NULL != sW);
     const size_t size = istate->nr;
@@ -746,12 +746,14 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
       PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
     }
 
-    //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
-    int i;
+    cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
+
+    /*int i;
     for(i=0 ; i<6; i++) { 
-        //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc/6, 1.0, sW->data.f+(i*128*256), sW->stride, istate->data.f, 1, 1.0, xF->data.f+i*128, 1);
+        cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc/6, 1.0, sW->data.f+(i*128*256), sW->stride, istate->data.f, 1, 1.0, xF->data.f+i*128, 1);
     }
-    //cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, sW->nc, 1 , sW->nr, 1.0, sW->data.f, 256, istate->data.f, 256, 1.0, xF->data.f, 768);
+     works cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, sW->nc, 1 , sW->nr, 1.0, sW->data.f, 256, istate->data.f, 256, 1.0, xF->data.f, 768);
+     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 768, 1 , 256, 1.0, sW->data.f, 256, istate->data.f, 1, 1.0, xF->data.f, 1);
 
     if(print_flag) {
       printf("Printing sW matrix\n");
@@ -762,33 +764,28 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
       PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
       exit(1);
     }
+    print_flag = 0;
 
     float *a = (float *) vio_malloc(sW->nr * sW->nc *sizeof(float)); //256x768
     float *b = (float *) vio_malloc(istate->nr * istate->nc * sizeof(float)); // 256x1
     float *c = (float *) vio_malloc(xF->nr * xF->nc * sizeof(float)); // 768x1
     memcpy(a, sW->data.f, sW->nr * sW->nc * sizeof(float));
     memcpy(b, istate->data.f, istate->nr * istate->nc * sizeof(float));
-    memcpy(c, xF->data.f, xF->nr * xF->nc * sizeof(float));
+    memcpy(c, xF->data.f, xF->nr * xF->nc * sizeof(float)); 
 
-    // 200+ seconds hw.mat_mul(a, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 256, 4, 0,0,0);
     if(!data_available) {
-        hw.mat_mul(a, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 4, 4, 0,0,0);
-        data_available = 0;
+        hw.mat_mul(a,b,c,c, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
+        data_available = 1;
     }
     else {
-        hw .mat_mul(NULL, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 4, 4, 0,0,0);
+        hw.mat_mul(NULL, b,c,c, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
     }
  
-    /*for(i=0 ; i<1; i++) { 
-      hw.mat_mul(a+(i*128*256), b, c+i*128, c , sW->nr, sW->nc/6, 1, 1,0, 1.0, 1.0, 128, istate->nr, 128);
-    }
-    */
     
-    //memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
-
-    vio_free(a); 
-    vio_free(b); 
-    vio_free(c); 
+    memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
+    vio_free(a);
+    vio_free(b);
+    vio_free(c); */
 
     for (size_t i = 0; i < (sizeq + sizeq); i++) {
         xF->data.v[i] = LOGISTICFV(xF->data.v[i]);
