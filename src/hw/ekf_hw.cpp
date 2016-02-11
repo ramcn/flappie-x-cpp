@@ -293,12 +293,25 @@ void ekf_hw::mat_mul(const float *a_rm, const float *b_cm, const float *c_in, fl
                 a_t, b_t, c_t);
 }
 
+#include <sys/time.h>
+
 void ekf_hw::mat_mul_mod(const float *a_rm, const float *b_cm, const float *c_in, float *c_outr,
                          uint32_t m_size, uint32_t n_size, uint32_t p_size, bool a_trans, bool b_trans,
                          float alpha, float beta, uint32_t a_stride, uint32_t b_stride, uint32_t c_stride,
                          const uint32_t a_buf, const uint32_t b_buf, const uint32_t c_buf, const uint32_t y_buf,
                          uint32_t a_t, uint32_t b_t, uint32_t c_t)
 {
+#define PROFILE_START(x) \
+    struct timeval pr_##x##_start, pr_##x##_end; \
+    gettimeofday(&pr_##x##_start, NULL);
+
+#define PROFILE_END(x) \
+    gettimeofday(&pr_##x##_end, NULL);
+#define PROFILE_REPORT(x)  \
+    printf("%-24s : %5lld\n", #x, (int64_t)(pr_##x##_end.tv_usec - pr_##x##_start.tv_usec) \
+           + ((int64_t)(pr_##x##_end.tv_sec - pr_##x##_start.tv_sec) * 1000 * 1000))
+
+
     PRINTF("update_cov::m_size = %d, n_size = %d, p_size = %d, a_trans = %d, b_trans = %d, a_stride = %d, b_stride = %d, c_stride = %d\n",
            m_size, n_size, p_size, a_trans, b_trans, a_stride, b_stride, c_stride);
     ASSERT(!(a_stride & 0x3), "a_stride:%d", a_stride);
@@ -313,18 +326,26 @@ void ekf_hw::mat_mul_mod(const float *a_rm, const float *b_cm, const float *c_in
     // Move data to HW
     uint32_t a_rows = a_trans ? n_size : m_size;
     uint32_t b_rows = b_trans ? p_size : n_size;
+    PRINTF("a_rows:%d, a_stride:%d sizef=%d\n", a_rows, a_stride, sizeof(float));
+    PRINTF("b_rows:%d, b_stride:%d VIO_EKF_MMUL_B_BUFSIZE=%d\n", b_rows, b_stride, VIO_EKF_MMUL_B_BUFSIZE);
+    PRINTF("c_rows=%d, c_stride:%d VIO_EKF_MMUL_C_BUFSIZE=%d\n", m_size, c_stride, VIO_EKF_MMUL_C_BUFSIZE);
     ASSERT((a_rows * a_stride * sizeof(float)) < VIO_EKF_MMUL_A_BUFSIZE, "A bufsize exceeds");
     ASSERT((b_rows * b_stride * sizeof(float)) < VIO_EKF_MMUL_B_BUFSIZE, "B bufsize exceeds");
     ASSERT((m_size * c_stride * sizeof(float)) < VIO_EKF_MMUL_C_BUFSIZE, "C bufsize exceeds");
 
     
-    PROFILE_START(CHK_DATA_TX);
+    PROFILE_START(MATMUL_FULL);
+    PROFILE_START(A_DATA_TX);
     move_dma_2_hw(a_rm, a_buf, (a_rows * a_stride * sizeof(float)));
+    PROFILE_END(A_DATA_TX);
+    PROFILE_START(B_DATA_TX);
     move_dma_2_hw(b_cm, b_buf, (b_rows * b_stride * sizeof(float)));
+    PROFILE_END(B_DATA_TX);
+    PROFILE_START(C_DATA_TX);
     move_dma_2_hw(c_in, c_buf, (m_size * c_stride * sizeof(float)));
-    PROFILE_END(CHK_DATA_TX);
+    PROFILE_END(C_DATA_TX);
 
-    PROFILE_START(CHK_PROC);
+    PROFILE_START(SETUP);
     WRITE_REG(EKF_MMUL_A_BASE, SET_ADDRESS(a_buf));
     WRITE_REG(EKF_MMUL_B_BASE, SET_ADDRESS(b_buf));
     WRITE_REG(EKF_MMUL_C_BASE, SET_ADDRESS(c_buf));
@@ -384,23 +405,29 @@ void ekf_hw::mat_mul_mod(const float *a_rm, const float *b_cm, const float *c_in
     VIO_EKF_MATMUL_COEF_B_T &beta_1 = vio_ekf->VIO_EKF_MATMUL_COEF_B;
     beta_1.field.Beta = beta;
     WRITE_REG(EKF_MATMUL_COEF_B, beta_1.val);
+    PROFILE_END(SETUP);
     
     // trigger, poll-n-wait
+    PROFILE_START(MATMUL);
     ctrl.field.MatMulStart = 1;
     ctrl.field.MatMulComputeMode = 0;
     WRITE_REG(EKF_CONTROL, ctrl.val);
     status.val = 0xfff0;
     POLL_N_WAIT(EKF_STATUS, status.val, status.field.MatMulDone == 0);
-    
-    PROFILE_END(CHK_PROC);
+    PROFILE_END(MATMUL);
 
-    PROFILE_START(CHK_DATA_RX);
+    PROFILE_START(DATA_RX);
     move_dma_2_cpu(y_buf, c_outr, (m_size * c_stride * sizeof(float)));
-    PROFILE_END(CHK_DATA_RX);
+    PROFILE_END(DATA_RX);
+    PROFILE_END(MATMUL_FULL);
 
-    PROFILE_REPORT(CHK_DATA_TX);
-    PROFILE_REPORT(CHK_PROC);
-    PROFILE_REPORT(CHK_DATA_RX);
+    PROFILE_REPORT(MATMUL_FULL);
+    PROFILE_REPORT(A_DATA_TX);
+    PROFILE_REPORT(B_DATA_TX);
+    PROFILE_REPORT(C_DATA_TX);
+    PROFILE_REPORT(SETUP);
+    PROFILE_REPORT(MATMUL);
+    PROFILE_REPORT(DATA_RX);
 }
 
 void
@@ -594,13 +621,6 @@ ekf_hw::process(float *res_cov, float *lc, float *inn, float *cov, float *state,
     PROFILE_REPORT(RES_COV_TX);
     PROFILE_REPORT(LC_TX);
     PROFILE_REPORT(COV_TX);
-    PROFILE_REPORT(INN_STATE_TX);
-    PROFILE_REPORT(CHOLESKY_PROC);
-    PROFILE_REPORT(MAT_SOLV_PROC);
-    PROFILE_REPORT(COV_UPDATE_PROC);
-    // PROFILE_REPORT(STATE_UPDATE_PROC);
-    PROFILE_REPORT(EKF_PROC);
-    PROFILE_REPORT(EKF_RX);
     
     return;
 }

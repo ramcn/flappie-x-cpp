@@ -698,6 +698,7 @@ void PrintMatrix(float* pMatrix, const size_t nR, const size_t nC, const CBLAS_O
 }
 
 static int print_flag=0;
+static int data_available=0;
 int max(int x, int y){
   if(x>y) return x;
   else return y;
@@ -749,10 +750,8 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     int i;
     for(i=0 ; i<6; i++) { 
         //cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc/6, 1.0, sW->data.f+(i*128*256), sW->stride, istate->data.f, 1, 1.0, xF->data.f+i*128, 1);
-        //cblas_sgemv(CblasColMajor, CblasTrans, m, n, alpha, A, m, B, k, beta, C, k);
-        lda = max(1,sW->nr); ldb = max(1,sW->nc); ldc = max(1,sW->nc); 
-        cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, sW->nc, 1 , sW->nr, 1.0, sW->data.f, lda, istate->data.f, ldb, 1.0, xF->data.f, ldc);
     }
+    //cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, sW->nc, 1 , sW->nr, 1.0, sW->data.f, 256, istate->data.f, 256, 1.0, xF->data.f, 768);
 
     if(print_flag) {
       printf("Printing sW matrix\n");
@@ -771,9 +770,20 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     memcpy(b, istate->data.f, istate->nr * istate->nc * sizeof(float));
     memcpy(c, xF->data.f, xF->nr * xF->nc * sizeof(float));
 
-    for(i=0 ; i<1; i++) { 
-      //hw.mat_mul(a+(i*128*256), b, c+i*128, c , sW->nr, sW->nc/6, 1, 1,0, 1.0, 1.0, 128, istate->nr, 128);
+    // 200+ seconds hw.mat_mul(a, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 256, 4, 0,0,0);
+    if(!data_available) {
+        hw.mat_mul(a, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 4, 4, 0,0,0);
+        data_available = 0;
     }
+    else {
+        hw .mat_mul(NULL, b, c, c , sW->nc, sW->nr, 1, 1,0, 1.0, 1.0, sW->nr, 4, 4, 0,0,0);
+    }
+ 
+    /*for(i=0 ; i<1; i++) { 
+      hw.mat_mul(a+(i*128*256), b, c+i*128, c , sW->nr, sW->nc/6, 1, 1,0, 1.0, 1.0, 128, istate->nr, 128);
+    }
+    */
+    
     //memcpy(xF->data.f, c, xF->nr * xF->nc * sizeof(float));
 
     vio_free(a); 

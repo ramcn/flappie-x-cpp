@@ -1418,8 +1418,10 @@ typedef struct {
 #define VIO_EKF_MSLV_X_BUF                      0x0014E000
 #define VIO_EKF_MSLV_B_BUF                      0x0010E000
 
-#define VIO_EKF_MMUL_A_BUF                      0x0010E000 
-#define VIO_EKF_MMUL_B_BUF                      0x0014E000 
+//#define VIO_EKF_MMUL_A_BUF                      0x0010E000 
+#define VIO_EKF_MMUL_A_BUF                      0x0000E000 
+//#define VIO_EKF_MMUL_B_BUF                      0x0014E000
+#define VIO_EKF_MMUL_B_BUF                      0x0010E000 
 #define VIO_EKF_MMUL_C_BUF                      0x0018E000 
 #define VIO_EKF_MMUL_Y_BUF                      0x0018E000 
 
