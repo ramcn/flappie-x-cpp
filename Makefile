@@ -18,9 +18,11 @@ ${buildDir}:
 	mkdir ${buildDir}
 
 .PHONY: test
-test: ${buildDir}/flappie
+test: ${buildDir}
 	cd ${buildDir} && \
-	make test
+	cmake .. -DCMAKE_CXX_FLAGS="-std=c++11 -Wno-format  -DENABLE_DMA=1 -g -fpermissive -Wfatal-errors -mfloat-abi=hard -mfpu=neon  -DUSE_SSE2  -D__USE_MISC -D_POSIX_SOURCE -DNDEBUG" -DCMAKE_BUILD_TYPE=${releaseType} -DHDF5_ROOT=${hdf5Root} && \
+	make testf
+	cp ${buildDir}/testf testf
 
 .PHONY: clean
 clean:

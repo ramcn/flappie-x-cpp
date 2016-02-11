@@ -106,6 +106,14 @@ add_executable (flappie
 	src/flappie.cpp)
 set_target_properties(flappie PROPERTIES COMPILE_FLAGS "${CMAKE_ARM_FLAGS}  -DENABLE_DMA=1")
 
+add_executable (testf
+	repro/2test.cpp
+        src/ref_model/ekf_sw.cpp
+        src/stimuli_gen/matrix_generation.cpp
+        src/hw/ekf_hw.cpp
+        src/hw/vio.cpp
+        src/hw/vio_priv.cpp)
+set_target_properties(testf PROPERTIES COMPILE_FLAGS "${CMAKE_ARM_FLAGS}  -DENABLE_DMA=1")
 
 if (BUILD_SHARED_LIB)
 	if (APPLE)
@@ -135,6 +143,7 @@ else (HDF5_STANDARD)
 endif (HDF5_STANDARD)
 
 target_link_libraries (flappie flappie_static ${BLAS} ${HDF5} m)
+target_link_libraries (testf ${BLAS} ${HDF5} m)
 if (APPLE)
 	target_link_libraries (flappie argp)
 endif (APPLE)
@@ -155,16 +164,5 @@ add_executable(flappie_unittest
 	src/test/test_util.cpp)
 target_include_directories(flappie_unittest PUBLIC "src/test" "src")
 target_link_libraries(flappie_unittest flappie_static ${BLAS} ${HDF5} m cunit)
-
-set (READSDIR ${PROJECT_SOURCE_DIR}/reads)
-set (TESTREAD "MINICOL228_20161012_FNFAB42578_MN17976_mux_scan_HG_52221_ch271_read66_strand")
-set (ENV{OPENBLAS_NUM_THREADS} 1)
-
-add_test(NAME unittest WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/test/ COMMAND flappie_unittest)
-add_test(test_call flappie ${READSDIR})
-add_test(test_licence flappie --licence)
-add_test(test_license flappie --license)
-add_test(test_help flappie --help)
-add_test(test_version flappie --version)
 
 add_custom_target(test-verbose COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
