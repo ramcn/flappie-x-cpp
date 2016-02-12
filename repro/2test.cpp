@@ -4,9 +4,10 @@
 #include <string.h>
 #include <math.h>
 #include <cblas.h>
-#include "a.h"
-#include "b.h"
-#include "cin.h"
+#include "../src/hw/ekf_hw.h"
+#include "../src/ref_model/ekf_sw.h"
+#include "../src/hw/vio_regs.h"
+#include "../src/hw/vio_utils.h"
 
 
 int max(int x, int y){
@@ -18,47 +19,65 @@ void PrintMatrix(float* pMatrix, const size_t nR, const size_t nC, const CBLAS_O
     if (Order == CblasRowMajor) {
         for (i = 0; i < nR; i++) {
             for (j = 0; j < nC; j++) {
-                printf("%f \t ", pMatrix[i * nC + j]); // !!!
+                fprintf(stderr,"%f \t ", pMatrix[i * nC + j]); // !!!
             }
-            printf("\n"); // !!!
+            fprintf(stderr,"\n"); // !!!
         }
     } else {
         for (i = 0; i < nR; i++) {
             for (j = 0; j < nC; j++) {
-                printf("%f \t ", pMatrix[i + j* nR ]); // !!!
+                fprintf(stderr,"%f \t ", pMatrix[i + j* nR ]); // !!!
             }
-            printf("\n"); // !!!
+            fprintf(stderr,"\n"); // !!!
         }
     }
-    printf("\n"); // !!!
+    fprintf(stderr,"\n"); // !!!
 }
 
 int main(void)
 {
-    const int m = 256;
-    const int n = 768;
+    const int m = 4;
+    const int n = 8;
     const int k = 1;
 
-    float alpha = 1.0, beta = 1.0;
-    int lda, ldb, ldc;
+    float A[] = {1,2,3,4,5,6,7,8,   1,2,3,4,5,6,7,8,   1,2,3,4,5,6,7,8,   1,2,3,4,5,6,7,8};
+    float B[] = { 1, 2, 3, 4 };
 
-    float * C = (float*) malloc(n * k * sizeof(float));
-    for (int i = 0; i < n*k; i++) C[i] = 0.0;
-    memcpy(C, cin, n*k*sizeof(float));
-    printf("cin[0]=%f\n",cin[0]); 
-    printf("C[0]=%f\n",C[0]); 
+    float alpha = 1.0, beta = 0.0;
 
-    //cblas_sgemv(CblasRowMajor, CblasNoTrans, m, n, alpha, A, n, B, k, beta, C, k);
-    //lda = max(1,n); ldb = max(1,k); ldc = max(1,k);  // refer manual and switch n and k
-    //cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m,k,n, alpha, A, lda, B, ldb, beta, C, ldc);
- 
-    //cblas_sgemv(CblasColMajor, CblasTrans, m, n, alpha, A, m, B, k, beta, C, k);
-    lda = max(1,m); ldb = max(1,n); ldc = max(1,n);  // refer manual and switch n and k
-    cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, n,k,m, alpha, A, lda, B, ldb, beta, C, ldc);
+    float *a1 = (float *) vio_malloc(m * n *sizeof(float)); //4x8
+    float *b1 = (float *) vio_malloc(m * 1 * sizeof(float)); // 4x1
+    float *c1 = (float *) vio_malloc(n * 1 * sizeof(float)); // 8x1
+    memcpy(a1, A, m * n * sizeof(float));
+    memcpy(b1, B, m * 1 * sizeof(float));
+    memset(c1, 0, n * 1 * sizeof(float));
+    cblas_sgemv(CblasColMajor, CblasTrans, m, n, alpha, a1, m, b1, k, beta, c1, k);
+    fprintf(stderr,"Result after sgemv\n"); 
+    PrintMatrix(c1, 8, k, CblasRowMajor);
 
-    PrintMatrix(C, n, k, CblasColMajor);
+    memset(c1, 0, n * 1 * sizeof(float));
+    cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, n,k,m, alpha, a1, m, b1, n, beta, c1, n);
+    fprintf(stderr,"Result after sgemm\n"); 
+    PrintMatrix(c1, 8, k, CblasRowMajor); 
 
-    free(C);
+
+    ekf_hw hw;
+    float *a = (float *) vio_malloc(m * n *sizeof(float)); //4x8
+    float *b = (float *) vio_malloc(m * 1 * sizeof(float)); // 4x1
+    float *cin = (float *) vio_malloc(n * 1 * sizeof(float)); // 8x1
+    float *cout = (float *) vio_malloc(n * 1 * sizeof(float)); // 8x1
+    memcpy(a, A, m * n * sizeof(float));
+    memcpy(b, B, m * 1 * sizeof(float));
+    memset(cin, 0, n * 1 * sizeof(float));
+    memset(cout, 0, n * 1 * sizeof(float));
+    hw.mat_mul(a, b, cin, cout , 8, 4, 1, 1,0, alpha, beta, 4, 4, 4, 0,0,0);
+    fprintf(stderr, "Result after ekf mm\n"); 
+    PrintMatrix(cout, n, k, CblasRowMajor);
+
+    vio_free(a);
+    vio_free(b);
+    vio_free(cin);
+    vio_free(cout);
 
     return 0;
 }
