@@ -1,0 +1,748 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 91.79    627.77   627.77 564446227     0.00     0.00  VIO_Resource::read_register(Bus_Type, char const*, unsigned int, unsigned int)
+  2.55    645.22    17.45 564446227     0.00     0.00  vio_read_register(Bus_Type, char const*, unsigned int, unsigned int)
+  2.47    662.13    16.91 568344155     0.00     0.00  VIO_Resource::get_bus(Bus_Type)
+  1.13    669.88     7.75   287550     0.00     0.00  VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool)
+  0.85    675.70     5.82    15975     0.00     0.04  grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*)
+  0.82    681.32     5.62    95850     0.00     0.00  VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int)
+  0.18    682.56     1.24    95850     0.00     0.01  ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)
+  0.06    682.95     0.39  3897928     0.00     0.00  vio_write_register(Bus_Type, char const*, unsigned int, unsigned int)
+  0.04    683.25     0.30  3897928     0.00     0.00  VIO_Resource::write_register(Bus_Type, char const*, unsigned int, unsigned int)
+  0.04    683.51     0.26        2     0.13     0.13  tanh_activation_inplace(_Mat*)
+  0.01    683.58     0.07   287550     0.00     0.00  VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool)
+  0.01    683.62     0.04   431325     0.00     0.00  VIO_Mem::get_phys_addr(void const*, unsigned int)
+  0.01    683.66     0.04    47925     0.00     0.00  Mem_Pool::release(unsigned long long)
+  0.00    683.69     0.03   383400     0.00     0.00  vio_phys_addr(void const*, unsigned int)
+  0.00    683.72     0.03   287550     0.00     0.00  dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool)
+  0.00    683.75     0.03    47925     0.00     0.00  Mem_Pool::allocate(unsigned int)
+  0.00    683.78     0.03    15976     0.00     0.00  VIO_Module::~VIO_Module()
+  0.00    683.80     0.02   766800     0.00     0.00  vio_map_buf(void const*, unsigned int, bool, bool, unsigned int&)
+  0.00    683.82     0.02   479250     0.00     0.00  VIO_Resource::get_mem()
+  0.00    683.84     0.02    95850     0.00     0.00  VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int)
+  0.00    683.86     0.02        1     0.02     0.02  exp_activation_inplace(_Mat*)
+  0.00    683.87     0.01   383412     0.00     0.00  VIO_Resource::get_dma(DMA_Type)
+  0.00    683.88     0.01   124605     0.00     0.00  logsumexpf(float, float)
+  0.00    683.89     0.01    95850     0.00     0.01  ekf_hw::mat_mul(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)
+  0.00    683.90     0.01    47925     0.00     0.00  VIO_Mem::get_mem(unsigned long long)
+  0.00    683.91     0.01    15976     0.00     0.00  VIO_Module::VIO_Module()
+  0.00    683.92     0.01    15976     0.00     0.00  ekf_hw::ekf_hw()
+  0.00    683.93     0.01    15976     0.00     0.00  ekf_hw::~ekf_hw()
+  0.00    683.94     0.01        3     0.00   136.73  grumod_backward(_Mat const*, _Mat const*, _Mat*)
+  0.00    683.94     0.00   204480     0.00     0.00  logsumexpf(float, float)
+  0.00    683.94     0.00   102247     0.00     0.00  logsumexp(double, double)
+  0.00    683.94     0.00    95850     0.00     0.00  dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int)
+  0.00    683.94     0.00    47925     0.00     0.00  VIO_Mem::free_mem(void*)
+  0.00    683.94     0.00    47925     0.00     0.00  vio_free
+  0.00    683.94     0.00    47925     0.00     0.00  vio_malloc
+  0.00    683.94     0.00     3195     0.00     0.00  trans_lookup(unsigned int, unsigned int, unsigned int)
+  0.00    683.94     0.00      135     0.00     0.00  quantilef(float const*, unsigned int, float*, unsigned int)
+  0.00    683.94     0.00      134     0.00     0.00  medianf(float const*, unsigned int)
+  0.00    683.94     0.00       67     0.00     0.00  madf(float const*, unsigned int, float const*)
+  0.00    683.94     0.00       32     0.00     0.00  free_flappie_matrix(_Mat*)
+  0.00    683.94     0.00       21     0.00     0.00  ifloor(int, int)
+  0.00    683.94     0.00       20     0.00     0.00  make_flappie_matrix(unsigned int, unsigned int)
+  0.00    683.94     0.00       12     0.00     0.00  remake_flappie_matrix(_Mat*, unsigned int, unsigned int)
+  0.00    683.94     0.00        6     0.00     0.00  affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*)
+  0.00    683.94     0.00        6     0.00     0.00  AXI_Bus::configure(long, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+  0.00    683.94     0.00        6     0.00     0.00  AXI_Bus::AXI_Bus()
+  0.00    683.94     0.00        6     0.00     0.00  AXI_Bus::~AXI_Bus()
+  0.00    683.94     0.00        5     0.00     0.00  feedforward_linear(_Mat const*, _Mat const*, _Mat const*, _Mat*)
+  0.00    683.94     0.00        4     0.00     0.00  read_float_attribute(int, char const*)
+  0.00    683.94     0.00        3     0.00     0.00  validate_flappie_matrix(_Mat*, float, float, float, bool, char const*, int)
+  0.00    683.94     0.00        3     0.00     0.00  nbase_from_flipflop_nparam(unsigned int)
+  0.00    683.94     0.00        3     0.00     0.00  iceil(int, int)
+  0.00    683.94     0.00        2     0.00     0.00  fprint_string(_IO_FILE*, char const*, bool)
+  0.00    683.94     0.00        2     0.00   136.73  grumod_forward(_Mat const*, _Mat const*, _Mat*)
+  0.00    683.94     0.00        2     0.00     0.00  free_flappie_imatrix(_iMat*)
+  0.00    683.94     0.00        2     0.00     0.00  make_flappie_imatrix(unsigned int, unsigned int)
+  0.00    683.94     0.00        1     0.00     0.00  convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*)
+  0.00    683.94     0.00        1     0.00     0.00  fprintf_fastq(_IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info)
+  0.00    683.94     0.00        1     0.00     0.00  fprintf_format(flappie_outformat_type, _IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info)
+  0.00    683.94     0.00        1     0.00     0.00  free_raw_table(raw_table*)
+  0.00    683.94     0.00        1     0.00     0.00  get_raw_scaling(int)
+  0.00    683.94     0.00        1     0.00     0.00  trim_raw_by_mad(raw_table, unsigned int, float)
+  0.00    683.94     0.00        1     0.00     0.00  change_positions(int const*, unsigned int, int*)
+  0.00    683.94     0.00        1     0.00     0.00  features_from_raw(raw_table, int)
+  0.00    683.94     0.00        1     0.00     0.00  decode_crf_flipflop(_Mat const*, bool, int*, float*)
+  0.00    683.94     0.00        1     0.00     0.13  globalnorm_flipflop(_Mat const*, _Mat const*, _Mat const*, float, _Mat*)
+  0.00    683.94     0.00        1     0.00     0.13  globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*)
+  0.00    683.94     0.00        1     0.00   683.91  flipflop_transitions(raw_table, float, model_type)
+  0.00    683.94     0.00        1     0.00     0.00  trace_from_posterior(_Mat*)
+  0.00    683.94     0.00        1     0.00     0.00  trim_and_segment_raw(raw_table, unsigned int, unsigned int, unsigned int, float)
+  0.00    683.94     0.00        1     0.00     0.00  read_string_attribute(int, char const*)
+  0.00    683.94     0.00        1     0.00     0.00  free_raw_basecall_info(_raw_basecall_info*)
+  0.00    683.94     0.00        1     0.00     0.00  medmad_normalise_array(float*, unsigned int)
+  0.00    683.94     0.00        1     0.00     0.01  transpost_crf_flipflop(_Mat const*, bool)
+  0.00    683.94     0.00        1     0.00     0.00  get_transition_function(model_type)
+  0.00    683.94     0.00        1     0.00     0.01  log_row_normalise_inplace(_Mat*)
+  0.00    683.94     0.00        1     0.00   683.91  flipflop_guppy_transitions(raw_table, float, guppy_model const*)
+  0.00    683.94     0.00        1     0.00     0.00  shift_scale_matrix_inplace(_Mat*, float, float)
+  0.00    683.94     0.00        1     0.00     0.00  crf_manystay_partition_function(_Mat const*)
+  0.00    683.94     0.00        1     0.00   683.91  flipflop_transitions_r941native(raw_table, float)
+  0.00    683.94     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00    683.94     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00    683.94     0.00        1     0.00     0.00  argmaxf(float const*, unsigned int)
+  0.00    683.94     0.00        1     0.00     0.00  valmaxf(float const*, unsigned int)
+  0.00    683.94     0.00        1     0.00     0.00  read_raw(char const*, bool)
+  0.00    683.94     0.00        1     0.00   683.94  calculate_post(char*, model_type)
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Resource::rd_dma_init()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Resource::mipi_dma_init()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Resource::dma_init()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Resource::VIO_Resource()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Mem::get_instance()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Mem::delete_instance()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Mem::VIO_Mem()
+  0.00    683.94     0.00        1     0.00     0.00  VIO_Mem::~VIO_Mem()
+  0.00    683.94     0.00        1     0.00     0.00  Mem_Pool::configure(unsigned int, unsigned long long, unsigned long long)
+  0.00    683.94     0.00        1     0.00     0.00  Mem_Pool::Mem_Pool()
+  0.00    683.94     0.00        1     0.00     0.00  Mem_Pool::~Mem_Pool()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.00% of 683.94 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.00  683.94                 main [1]
+                0.00  683.94       1/1           calculate_post(char*, model_type) [2]
+                0.00    0.00       1/1           fprintf_format(flappie_outformat_type, _IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [81]
+                0.00    0.00       1/1           free_raw_basecall_info(_raw_basecall_info*) [91]
+-----------------------------------------------
+                0.00  683.94       1/1           main [1]
+[2]    100.0    0.00  683.94       1         calculate_post(char*, model_type) [2]
+                0.00  683.91       1/1           flipflop_transitions(raw_table, float, model_type) [3]
+                0.02    0.00       1/1           exp_activation_inplace(_Mat*) [38]
+                0.00    0.01       1/1           transpost_crf_flipflop(_Mat const*, bool) [42]
+                0.00    0.00       2/32          free_flappie_matrix(_Mat*) [64]
+                0.00    0.00       1/1           read_raw(char const*, bool) [99]
+                0.00    0.00       1/1           trim_and_segment_raw(raw_table, unsigned int, unsigned int, unsigned int, float) [89]
+                0.00    0.00       1/1           medmad_normalise_array(float*, unsigned int) [92]
+                0.00    0.00       1/3           nbase_from_flipflop_nparam(unsigned int) [75]
+                0.00    0.00       1/1           decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+                0.00    0.00       1/1           change_positions(int const*, unsigned int, int*) [85]
+                0.00    0.00       1/1           trace_from_posterior(_Mat*) [88]
+-----------------------------------------------
+                0.00  683.91       1/1           calculate_post(char*, model_type) [2]
+[3]    100.0    0.00  683.91       1         flipflop_transitions(raw_table, float, model_type) [3]
+                0.00  683.91       1/1           flipflop_transitions_r941native(raw_table, float) [5]
+                0.00    0.00       1/1           get_transition_function(model_type) [93]
+-----------------------------------------------
+                0.00  683.91       1/1           flipflop_transitions_r941native(raw_table, float) [5]
+[4]    100.0    0.00  683.91       1         flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+                0.01  410.18       3/3           grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+                0.00  273.46       2/2           grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                0.13    0.00       1/2           tanh_activation_inplace(_Mat*) [22]
+                0.00    0.13       1/1           globalnorm_flipflop(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [23]
+                0.00    0.00       1/1           convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+                0.00    0.00      12/32          free_flappie_matrix(_Mat*) [64]
+                0.00    0.00       5/5           feedforward_linear(_Mat const*, _Mat const*, _Mat const*, _Mat*) [72]
+                0.00    0.00       1/1           features_from_raw(raw_table, int) [86]
+-----------------------------------------------
+                0.00  683.91       1/1           flipflop_transitions(raw_table, float, model_type) [3]
+[5]    100.0    0.00  683.91       1         flipflop_transitions_r941native(raw_table, float) [5]
+                0.00  683.91       1/1           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+-----------------------------------------------
+                2.33  271.13    6390/15975       grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                3.49  406.69    9585/15975       grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+[6]    100.0    5.82  677.82   15975         grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+                0.01  677.63   95850/95850       ekf_hw::mat_mul(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [7]
+                0.01    0.04   15975/15976       ekf_hw::ekf_hw() [26]
+                0.00    0.05   47925/47925       vio_free [27]
+                0.00    0.04   47925/47925       vio_malloc [29]
+                0.01    0.03   15975/15976       ekf_hw::~ekf_hw() [33]
+-----------------------------------------------
+                0.01  677.63   95850/95850       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+[7]     99.1    0.01  677.63   95850         ekf_hw::mat_mul(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [7]
+                1.24  676.39   95850/95850       ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+-----------------------------------------------
+                1.24  676.39   95850/95850       ekf_hw::mat_mul(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [7]
+[8]     99.1    1.24  676.39   95850         ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+                0.07  429.58  287550/287550      VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [11]
+                0.02  209.65   95850/95850       VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [16]
+                0.97   35.82 31368110/564446227     vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [9]
+                0.13    0.14 1341900/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+-----------------------------------------------
+                0.97   35.82 31368110/564446227     ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+                5.37  198.49 173820829/564446227     VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [18]
+               11.11  410.25 359257288/564446227     VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [13]
+[9]     96.8   17.45  644.56 564446227         vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [9]
+              627.77   16.79 564446227/564446227     VIO_Resource::read_register(Bus_Type, char const*, unsigned int, unsigned int) [10]
+-----------------------------------------------
+              627.77   16.79 564446227/564446227     vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [9]
+[10]    94.2  627.77   16.79 564446227         VIO_Resource::read_register(Bus_Type, char const*, unsigned int, unsigned int) [10]
+               16.79    0.00 564446227/568344155     VIO_Resource::get_bus(Bus_Type) [19]
+-----------------------------------------------
+                0.07  429.58  287550/287550      ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+[11]    62.8    0.07  429.58  287550         VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [11]
+                0.03  429.47  287550/287550      dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [12]
+                0.02    0.04  287550/383400      vio_phys_addr(void const*, unsigned int) [25]
+                0.01    0.00  575100/766800      vio_map_buf(void const*, unsigned int, bool, bool, unsigned int&) [36]
+-----------------------------------------------
+                0.03  429.47  287550/287550      VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [11]
+[12]    62.8    0.03  429.47  287550         dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [12]
+                7.75  421.72  287550/287550      VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [13]
+-----------------------------------------------
+                7.75  421.72  287550/287550      dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [12]
+[13]    62.8    7.75  421.72  287550         VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [13]
+               11.11  410.25 359257288/564446227     vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [9]
+                0.17    0.18 1725300/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.01    0.00  287550/383412      VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.01  410.18       3/3           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[14]    60.0    0.01  410.18       3         grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+                3.49  406.69    9585/15975       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+                0.00    0.00       3/12          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+                0.00    0.00       3/20          make_flappie_matrix(unsigned int, unsigned int) [66]
+                0.00    0.00       3/32          free_flappie_matrix(_Mat*) [64]
+-----------------------------------------------
+                0.00  273.46       2/2           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[15]    40.0    0.00  273.46       2         grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                2.33  271.13    6390/15975       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+                0.00    0.00       2/12          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+                0.00    0.00       2/20          make_flappie_matrix(unsigned int, unsigned int) [66]
+                0.00    0.00       2/32          free_flappie_matrix(_Mat*) [64]
+-----------------------------------------------
+                0.02  209.65   95850/95850       ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+[16]    30.7    0.02  209.65   95850         VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [16]
+                0.00  209.63   95850/95850       dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [17]
+                0.01    0.01   95850/383400      vio_phys_addr(void const*, unsigned int) [25]
+                0.01    0.00  191700/766800      vio_map_buf(void const*, unsigned int, bool, bool, unsigned int&) [36]
+-----------------------------------------------
+                0.00  209.63   95850/95850       VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [16]
+[17]    30.7    0.00  209.63   95850         dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [17]
+                5.62  204.01   95850/95850       VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [18]
+-----------------------------------------------
+                5.62  204.01   95850/95850       dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [17]
+[18]    30.7    5.62  204.01   95850         VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [18]
+                5.37  198.49 173820829/564446227     vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [9]
+                0.07    0.07  670950/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.00    0.00   95850/383412      VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.12    0.00 3897928/568344155     VIO_Resource::write_register(Bus_Type, char const*, unsigned int, unsigned int) [21]
+               16.79    0.00 564446227/568344155     VIO_Resource::read_register(Bus_Type, char const*, unsigned int, unsigned int) [10]
+[19]     2.5   16.91    0.00 568344155         VIO_Resource::get_bus(Bus_Type) [19]
+-----------------------------------------------
+                0.00    0.00       6/3897928     VIO_Resource::dma_init() [50]
+                0.00    0.00       6/3897928     VIO_Resource::mipi_dma_init() [49]
+                0.00    0.00       6/3897928     VIO_Resource::rd_dma_init() [48]
+                0.02    0.02  159760/3897928     ekf_hw::ekf_hw() [26]
+                0.07    0.07  670950/3897928     VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [18]
+                0.13    0.14 1341900/3897928     ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int) [8]
+                0.17    0.18 1725300/3897928     VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [13]
+[20]     0.1    0.39    0.42 3897928         vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.30    0.12 3897928/3897928     VIO_Resource::write_register(Bus_Type, char const*, unsigned int, unsigned int) [21]
+-----------------------------------------------
+                0.30    0.12 3897928/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+[21]     0.1    0.30    0.12 3897928         VIO_Resource::write_register(Bus_Type, char const*, unsigned int, unsigned int) [21]
+                0.12    0.00 3897928/568344155     VIO_Resource::get_bus(Bus_Type) [19]
+-----------------------------------------------
+                0.13    0.00       1/2           globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+                0.13    0.00       1/2           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[22]     0.0    0.26    0.00       2         tanh_activation_inplace(_Mat*) [22]
+                0.00    0.00       2/3           validate_flappie_matrix(_Mat*, float, float, float, bool, char const*, int) [74]
+-----------------------------------------------
+                0.00    0.13       1/1           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[23]     0.0    0.00    0.13       1         globalnorm_flipflop(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [23]
+                0.00    0.13       1/1           globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+-----------------------------------------------
+                0.00    0.13       1/1           globalnorm_flipflop(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [23]
+[24]     0.0    0.00    0.13       1         globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+                0.13    0.00       1/2           tanh_activation_inplace(_Mat*) [22]
+                0.00    0.00       1/6           affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*) [68]
+                0.00    0.00       1/1           shift_scale_matrix_inplace(_Mat*, float, float) [94]
+                0.00    0.00       1/1           crf_manystay_partition_function(_Mat const*) [95]
+-----------------------------------------------
+                0.01    0.01   95850/383400      VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [16]
+                0.02    0.04  287550/383400      VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [11]
+[25]     0.0    0.03    0.05  383400         vio_phys_addr(void const*, unsigned int) [25]
+                0.04    0.00  383400/431325      VIO_Mem::get_phys_addr(void const*, unsigned int) [30]
+                0.02    0.00  383400/479250      VIO_Resource::get_mem() [37]
+-----------------------------------------------
+                0.00    0.00       1/15976       convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+                0.01    0.04   15975/15976       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+[26]     0.0    0.01    0.04   15976         ekf_hw::ekf_hw() [26]
+                0.02    0.02  159760/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.01    0.00   15976/15976       VIO_Module::VIO_Module() [41]
+-----------------------------------------------
+                0.00    0.05   47925/47925       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+[27]     0.0    0.00    0.05   47925         vio_free [27]
+                0.00    0.04   47925/47925       VIO_Mem::free_mem(void*) [28]
+                0.00    0.00   47925/479250      VIO_Resource::get_mem() [37]
+-----------------------------------------------
+                0.00    0.04   47925/47925       vio_free [27]
+[28]     0.0    0.00    0.04   47925         VIO_Mem::free_mem(void*) [28]
+                0.04    0.00   47925/47925       Mem_Pool::release(unsigned long long) [32]
+                0.00    0.00   47925/431325      VIO_Mem::get_phys_addr(void const*, unsigned int) [30]
+-----------------------------------------------
+                0.00    0.04   47925/47925       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+[29]     0.0    0.00    0.04   47925         vio_malloc [29]
+                0.01    0.03   47925/47925       VIO_Mem::get_mem(unsigned long long) [31]
+                0.00    0.00   47925/479250      VIO_Resource::get_mem() [37]
+-----------------------------------------------
+                0.00    0.00   47925/431325      VIO_Mem::free_mem(void*) [28]
+                0.04    0.00  383400/431325      vio_phys_addr(void const*, unsigned int) [25]
+[30]     0.0    0.04    0.00  431325         VIO_Mem::get_phys_addr(void const*, unsigned int) [30]
+-----------------------------------------------
+                0.01    0.03   47925/47925       vio_malloc [29]
+[31]     0.0    0.01    0.03   47925         VIO_Mem::get_mem(unsigned long long) [31]
+                0.03    0.00   47925/47925       Mem_Pool::allocate(unsigned int) [34]
+-----------------------------------------------
+                0.04    0.00   47925/47925       VIO_Mem::free_mem(void*) [28]
+[32]     0.0    0.04    0.00   47925         Mem_Pool::release(unsigned long long) [32]
+-----------------------------------------------
+                0.00    0.00       1/15976       convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+                0.01    0.03   15975/15976       grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [6]
+[33]     0.0    0.01    0.03   15976         ekf_hw::~ekf_hw() [33]
+                0.03    0.00   15976/15976       VIO_Module::~VIO_Module() [35]
+-----------------------------------------------
+                0.03    0.00   47925/47925       VIO_Mem::get_mem(unsigned long long) [31]
+[34]     0.0    0.03    0.00   47925         Mem_Pool::allocate(unsigned int) [34]
+-----------------------------------------------
+                0.03    0.00   15976/15976       ekf_hw::~ekf_hw() [33]
+[35]     0.0    0.03    0.00   15976         VIO_Module::~VIO_Module() [35]
+-----------------------------------------------
+                0.01    0.00  191700/766800      VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [16]
+                0.01    0.00  575100/766800      VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [11]
+[36]     0.0    0.02    0.00  766800         vio_map_buf(void const*, unsigned int, bool, bool, unsigned int&) [36]
+-----------------------------------------------
+                0.00    0.00   47925/479250      vio_malloc [29]
+                0.00    0.00   47925/479250      vio_free [27]
+                0.02    0.00  383400/479250      vio_phys_addr(void const*, unsigned int) [25]
+[37]     0.0    0.02    0.00  479250         VIO_Resource::get_mem() [37]
+-----------------------------------------------
+                0.02    0.00       1/1           calculate_post(char*, model_type) [2]
+[38]     0.0    0.02    0.00       1         exp_activation_inplace(_Mat*) [38]
+                0.00    0.00       1/3           validate_flappie_matrix(_Mat*, float, float, float, bool, char const*, int) [74]
+-----------------------------------------------
+                0.00    0.00       4/383412      VIO_Resource::dma_init() [50]
+                0.00    0.00       4/383412      VIO_Resource::mipi_dma_init() [49]
+                0.00    0.00       4/383412      VIO_Resource::rd_dma_init() [48]
+                0.00    0.00   95850/383412      VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [18]
+                0.01    0.00  287550/383412      VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [13]
+[39]     0.0    0.01    0.00  383412         VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.01    0.00  124605/124605      log_row_normalise_inplace(_Mat*) [43]
+[40]     0.0    0.01    0.00  124605         logsumexpf(float, float) [40]
+-----------------------------------------------
+                0.01    0.00   15976/15976       ekf_hw::ekf_hw() [26]
+[41]     0.0    0.01    0.00   15976         VIO_Module::VIO_Module() [41]
+-----------------------------------------------
+                0.00    0.01       1/1           calculate_post(char*, model_type) [2]
+[42]     0.0    0.00    0.01       1         transpost_crf_flipflop(_Mat const*, bool) [42]
+                0.00    0.01       1/1           log_row_normalise_inplace(_Mat*) [43]
+                0.00    0.00  204480/204480      logsumexpf(float, float) [58]
+                0.00    0.00       2/20          make_flappie_matrix(unsigned int, unsigned int) [66]
+                0.00    0.00       1/32          free_flappie_matrix(_Mat*) [64]
+-----------------------------------------------
+                0.00    0.01       1/1           transpost_crf_flipflop(_Mat const*, bool) [42]
+[43]     0.0    0.00    0.01       1         log_row_normalise_inplace(_Mat*) [43]
+                0.01    0.00  124605/124605      logsumexpf(float, float) [40]
+-----------------------------------------------
+                0.00    0.00       1/1           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[44]     0.0    0.00    0.00       1         convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+                0.00    0.00       1/15976       ekf_hw::ekf_hw() [26]
+                0.00    0.00       1/15976       ekf_hw::~ekf_hw() [33]
+                0.00    0.00      21/21          ifloor(int, int) [65]
+                0.00    0.00       3/3           iceil(int, int) [76]
+                0.00    0.00       1/12          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+-----------------------------------------------
+                                   1             __static_initialization_and_destruction_0(int, int) [45]
+                0.00    0.00       1/1           __libc_csu_init [47]
+[45]     0.0    0.00    0.00       1+1       __static_initialization_and_destruction_0(int, int) [45]
+                0.00    0.00       1/1           VIO_Resource::VIO_Resource() [46]
+                                   1             __static_initialization_and_destruction_0(int, int) [45]
+-----------------------------------------------
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [45]
+[46]     0.0    0.00    0.00       1         VIO_Resource::VIO_Resource() [46]
+                0.00    0.00       1/1           VIO_Resource::dma_init() [50]
+                0.00    0.00       1/1           VIO_Resource::mipi_dma_init() [49]
+                0.00    0.00       1/1           VIO_Resource::rd_dma_init() [48]
+                0.00    0.00       6/6           AXI_Bus::AXI_Bus() [70]
+                0.00    0.00       6/6           AXI_Bus::configure(long, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [69]
+                0.00    0.00       1/1           VIO_Mem::get_instance() [100]
+-----------------------------------------------
+                                                 <spontaneous>
+[47]     0.0    0.00    0.00                 __libc_csu_init [47]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [45]
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [96]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Resource::VIO_Resource() [46]
+[48]     0.0    0.00    0.00       1         VIO_Resource::rd_dma_init() [48]
+                0.00    0.00       6/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.00    0.00       4/383412      VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Resource::VIO_Resource() [46]
+[49]     0.0    0.00    0.00       1         VIO_Resource::mipi_dma_init() [49]
+                0.00    0.00       6/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.00    0.00       4/383412      VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Resource::VIO_Resource() [46]
+[50]     0.0    0.00    0.00       1         VIO_Resource::dma_init() [50]
+                0.00    0.00       6/3897928     vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [20]
+                0.00    0.00       4/383412      VIO_Resource::get_dma(DMA_Type) [39]
+-----------------------------------------------
+                0.00    0.00  204480/204480      transpost_crf_flipflop(_Mat const*, bool) [42]
+[58]     0.0    0.00    0.00  204480         logsumexpf(float, float) [58]
+-----------------------------------------------
+                0.00    0.00  102247/102247      crf_manystay_partition_function(_Mat const*) [95]
+[59]     0.0    0.00    0.00  102247         logsumexp(double, double) [59]
+-----------------------------------------------
+                0.00    0.00    3195/3195        decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+[60]     0.0    0.00    0.00    3195         trans_lookup(unsigned int, unsigned int, unsigned int) [60]
+-----------------------------------------------
+                0.00    0.00       1/135         trim_raw_by_mad(raw_table, unsigned int, float) [84]
+                0.00    0.00     134/135         medianf(float const*, unsigned int) [62]
+[61]     0.0    0.00    0.00     135         quantilef(float const*, unsigned int, float*, unsigned int) [61]
+-----------------------------------------------
+                0.00    0.00       1/134         medmad_normalise_array(float*, unsigned int) [92]
+                0.00    0.00     133/134         madf(float const*, unsigned int, float const*) [63]
+[62]     0.0    0.00    0.00     134         medianf(float const*, unsigned int) [62]
+                0.00    0.00     134/135         quantilef(float const*, unsigned int, float*, unsigned int) [61]
+-----------------------------------------------
+                0.00    0.00       1/67          medmad_normalise_array(float*, unsigned int) [92]
+                0.00    0.00      66/67          trim_raw_by_mad(raw_table, unsigned int, float) [84]
+[63]     0.0    0.00    0.00      67         madf(float const*, unsigned int, float const*) [63]
+                0.00    0.00     133/134         medianf(float const*, unsigned int) [62]
+-----------------------------------------------
+                0.00    0.00       1/32          transpost_crf_flipflop(_Mat const*, bool) [42]
+                0.00    0.00       2/32          calculate_post(char*, model_type) [2]
+                0.00    0.00       2/32          grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                0.00    0.00       3/32          grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+                0.00    0.00      12/32          flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+                0.00    0.00      12/32          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+[64]     0.0    0.00    0.00      32         free_flappie_matrix(_Mat*) [64]
+-----------------------------------------------
+                0.00    0.00      21/21          convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+[65]     0.0    0.00    0.00      21         ifloor(int, int) [65]
+-----------------------------------------------
+                0.00    0.00       1/20          features_from_raw(raw_table, int) [86]
+                0.00    0.00       2/20          transpost_crf_flipflop(_Mat const*, bool) [42]
+                0.00    0.00       2/20          grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                0.00    0.00       3/20          grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+                0.00    0.00      12/20          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+[66]     0.0    0.00    0.00      20         make_flappie_matrix(unsigned int, unsigned int) [66]
+-----------------------------------------------
+                0.00    0.00       1/12          convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+                0.00    0.00       2/12          grumod_forward(_Mat const*, _Mat const*, _Mat*) [15]
+                0.00    0.00       3/12          grumod_backward(_Mat const*, _Mat const*, _Mat*) [14]
+                0.00    0.00       6/12          affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*) [68]
+[67]     0.0    0.00    0.00      12         remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+                0.00    0.00      12/32          free_flappie_matrix(_Mat*) [64]
+                0.00    0.00      12/20          make_flappie_matrix(unsigned int, unsigned int) [66]
+-----------------------------------------------
+                0.00    0.00       1/6           globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+                0.00    0.00       5/6           feedforward_linear(_Mat const*, _Mat const*, _Mat const*, _Mat*) [72]
+[68]     0.0    0.00    0.00       6         affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*) [68]
+                0.00    0.00       6/12          remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [67]
+-----------------------------------------------
+                0.00    0.00       6/6           VIO_Resource::VIO_Resource() [46]
+[69]     0.0    0.00    0.00       6         AXI_Bus::configure(long, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [69]
+-----------------------------------------------
+                0.00    0.00       6/6           VIO_Resource::VIO_Resource() [46]
+[70]     0.0    0.00    0.00       6         AXI_Bus::AXI_Bus() [70]
+-----------------------------------------------
+                0.00    0.00       6/6           VIO_Resource::~VIO_Resource() [220]
+[71]     0.0    0.00    0.00       6         AXI_Bus::~AXI_Bus() [71]
+-----------------------------------------------
+                0.00    0.00       5/5           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[72]     0.0    0.00    0.00       5         feedforward_linear(_Mat const*, _Mat const*, _Mat const*, _Mat*) [72]
+                0.00    0.00       5/6           affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*) [68]
+-----------------------------------------------
+                0.00    0.00       4/4           get_raw_scaling(int) [83]
+[73]     0.0    0.00    0.00       4         read_float_attribute(int, char const*) [73]
+-----------------------------------------------
+                0.00    0.00       1/3           exp_activation_inplace(_Mat*) [38]
+                0.00    0.00       2/3           tanh_activation_inplace(_Mat*) [22]
+[74]     0.0    0.00    0.00       3         validate_flappie_matrix(_Mat*, float, float, float, bool, char const*, int) [74]
+-----------------------------------------------
+                0.00    0.00       1/3           calculate_post(char*, model_type) [2]
+                0.00    0.00       1/3           trace_from_posterior(_Mat*) [88]
+                0.00    0.00       1/3           crf_manystay_partition_function(_Mat const*) [95]
+[75]     0.0    0.00    0.00       3         nbase_from_flipflop_nparam(unsigned int) [75]
+-----------------------------------------------
+                0.00    0.00       3/3           convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [44]
+[76]     0.0    0.00    0.00       3         iceil(int, int) [76]
+-----------------------------------------------
+                0.00    0.00       2/2           fprintf_fastq(_IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [80]
+[77]     0.0    0.00    0.00       2         fprint_string(_IO_FILE*, char const*, bool) [77]
+-----------------------------------------------
+                0.00    0.00       1/2           decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+                0.00    0.00       1/2           free_raw_basecall_info(_raw_basecall_info*) [91]
+[78]     0.0    0.00    0.00       2         free_flappie_imatrix(_iMat*) [78]
+-----------------------------------------------
+                0.00    0.00       1/2           decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+                0.00    0.00       1/2           trace_from_posterior(_Mat*) [88]
+[79]     0.0    0.00    0.00       2         make_flappie_imatrix(unsigned int, unsigned int) [79]
+-----------------------------------------------
+                0.00    0.00       1/1           fprintf_format(flappie_outformat_type, _IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [81]
+[80]     0.0    0.00    0.00       1         fprintf_fastq(_IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [80]
+                0.00    0.00       2/2           fprint_string(_IO_FILE*, char const*, bool) [77]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[81]     0.0    0.00    0.00       1         fprintf_format(flappie_outformat_type, _IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [81]
+                0.00    0.00       1/1           fprintf_fastq(_IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [80]
+-----------------------------------------------
+                0.00    0.00       1/1           free_raw_basecall_info(_raw_basecall_info*) [91]
+[82]     0.0    0.00    0.00       1         free_raw_table(raw_table*) [82]
+-----------------------------------------------
+                0.00    0.00       1/1           read_raw(char const*, bool) [99]
+[83]     0.0    0.00    0.00       1         get_raw_scaling(int) [83]
+                0.00    0.00       4/4           read_float_attribute(int, char const*) [73]
+-----------------------------------------------
+                0.00    0.00       1/1           trim_and_segment_raw(raw_table, unsigned int, unsigned int, unsigned int, float) [89]
+[84]     0.0    0.00    0.00       1         trim_raw_by_mad(raw_table, unsigned int, float) [84]
+                0.00    0.00      66/67          madf(float const*, unsigned int, float const*) [63]
+                0.00    0.00       1/135         quantilef(float const*, unsigned int, float*, unsigned int) [61]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[85]     0.0    0.00    0.00       1         change_positions(int const*, unsigned int, int*) [85]
+-----------------------------------------------
+                0.00    0.00       1/1           flipflop_guppy_transitions(raw_table, float, guppy_model const*) [4]
+[86]     0.0    0.00    0.00       1         features_from_raw(raw_table, int) [86]
+                0.00    0.00       1/20          make_flappie_matrix(unsigned int, unsigned int) [66]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[87]     0.0    0.00    0.00       1         decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+                0.00    0.00    3195/3195        trans_lookup(unsigned int, unsigned int, unsigned int) [60]
+                0.00    0.00       1/2           make_flappie_imatrix(unsigned int, unsigned int) [79]
+                0.00    0.00       1/1           valmaxf(float const*, unsigned int) [98]
+                0.00    0.00       1/1           argmaxf(float const*, unsigned int) [97]
+                0.00    0.00       1/2           free_flappie_imatrix(_iMat*) [78]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[88]     0.0    0.00    0.00       1         trace_from_posterior(_Mat*) [88]
+                0.00    0.00       1/3           nbase_from_flipflop_nparam(unsigned int) [75]
+                0.00    0.00       1/2           make_flappie_imatrix(unsigned int, unsigned int) [79]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[89]     0.0    0.00    0.00       1         trim_and_segment_raw(raw_table, unsigned int, unsigned int, unsigned int, float) [89]
+                0.00    0.00       1/1           trim_raw_by_mad(raw_table, unsigned int, float) [84]
+-----------------------------------------------
+                0.00    0.00       1/1           read_raw(char const*, bool) [99]
+[90]     0.0    0.00    0.00       1         read_string_attribute(int, char const*) [90]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[91]     0.0    0.00    0.00       1         free_raw_basecall_info(_raw_basecall_info*) [91]
+                0.00    0.00       1/1           free_raw_table(raw_table*) [82]
+                0.00    0.00       1/2           free_flappie_imatrix(_iMat*) [78]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[92]     0.0    0.00    0.00       1         medmad_normalise_array(float*, unsigned int) [92]
+                0.00    0.00       1/134         medianf(float const*, unsigned int) [62]
+                0.00    0.00       1/67          madf(float const*, unsigned int, float const*) [63]
+-----------------------------------------------
+                0.00    0.00       1/1           flipflop_transitions(raw_table, float, model_type) [3]
+[93]     0.0    0.00    0.00       1         get_transition_function(model_type) [93]
+-----------------------------------------------
+                0.00    0.00       1/1           globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+[94]     0.0    0.00    0.00       1         shift_scale_matrix_inplace(_Mat*, float, float) [94]
+-----------------------------------------------
+                0.00    0.00       1/1           globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [24]
+[95]     0.0    0.00    0.00       1         crf_manystay_partition_function(_Mat const*) [95]
+                0.00    0.00  102247/102247      logsumexp(double, double) [59]
+                0.00    0.00       1/3           nbase_from_flipflop_nparam(unsigned int) [75]
+-----------------------------------------------
+                                   1             __static_initialization_and_destruction_0(int, int) [96]
+                0.00    0.00       1/1           __libc_csu_init [47]
+[96]     0.0    0.00    0.00       1+1       __static_initialization_and_destruction_0(int, int) [96]
+                                   1             __static_initialization_and_destruction_0(int, int) [96]
+-----------------------------------------------
+                0.00    0.00       1/1           decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+[97]     0.0    0.00    0.00       1         argmaxf(float const*, unsigned int) [97]
+-----------------------------------------------
+                0.00    0.00       1/1           decode_crf_flipflop(_Mat const*, bool, int*, float*) [87]
+[98]     0.0    0.00    0.00       1         valmaxf(float const*, unsigned int) [98]
+-----------------------------------------------
+                0.00    0.00       1/1           calculate_post(char*, model_type) [2]
+[99]     0.0    0.00    0.00       1         read_raw(char const*, bool) [99]
+                0.00    0.00       1/1           read_string_attribute(int, char const*) [90]
+                0.00    0.00       1/1           get_raw_scaling(int) [83]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Resource::VIO_Resource() [46]
+[100]    0.0    0.00    0.00       1         VIO_Mem::get_instance() [100]
+                0.00    0.00       1/1           VIO_Mem::VIO_Mem() [102]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Resource::~VIO_Resource() [220]
+[101]    0.0    0.00    0.00       1         VIO_Mem::delete_instance() [101]
+                0.00    0.00       1/1           VIO_Mem::~VIO_Mem() [103]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Mem::get_instance() [100]
+[102]    0.0    0.00    0.00       1         VIO_Mem::VIO_Mem() [102]
+                0.00    0.00       1/1           Mem_Pool::Mem_Pool() [105]
+                0.00    0.00       1/1           Mem_Pool::configure(unsigned int, unsigned long long, unsigned long long) [104]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Mem::delete_instance() [101]
+[103]    0.0    0.00    0.00       1         VIO_Mem::~VIO_Mem() [103]
+                0.00    0.00       1/1           Mem_Pool::~Mem_Pool() [106]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Mem::VIO_Mem() [102]
+[104]    0.0    0.00    0.00       1         Mem_Pool::configure(unsigned int, unsigned long long, unsigned long long) [104]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Mem::VIO_Mem() [102]
+[105]    0.0    0.00    0.00       1         Mem_Pool::Mem_Pool() [105]
+-----------------------------------------------
+                0.00    0.00       1/1           VIO_Mem::~VIO_Mem() [103]
+[106]    0.0    0.00    0.00       1         Mem_Pool::~Mem_Pool() [106]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [68] affine_map(_Mat const*, _Mat const*, _Mat const*, _Mat*) [67] remake_flappie_matrix(_Mat*, unsigned int, unsigned int) [13] VIO_Resource::dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool)
+  [44] convolution(_Mat const*, _Mat const*, _Mat const*, unsigned int, _Mat*) [38] exp_activation_inplace(_Mat*) [49] VIO_Resource::mipi_dma_init()
+   [6] grumod_step(_Mat const*, _Mat const*, _Mat const*, _Mat*, _Mat*) [91] free_raw_basecall_info(_raw_basecall_info*) [10] VIO_Resource::read_register(Bus_Type, char const*, unsigned int, unsigned int)
+  [36] vio_map_buf(void const*, unsigned int, bool, bool, unsigned int&) [92] medmad_normalise_array(float*, unsigned int) [18] VIO_Resource::dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int)
+  [60] trans_lookup(unsigned int, unsigned int, unsigned int) [42] transpost_crf_flipflop(_Mat const*, bool) [21] VIO_Resource::write_register(Bus_Type, char const*, unsigned int, unsigned int)
+  [12] dma_data_2_hw(unsigned long long, unsigned long long, unsigned int, bool) [93] get_transition_function(model_type) [19] VIO_Resource::get_bus(Bus_Type)
+  [77] fprint_string(_IO_FILE*, char const*, bool) [22] tanh_activation_inplace(_Mat*) [39] VIO_Resource::get_dma(DMA_Type)
+  [80] fprintf_fastq(_IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [74] validate_flappie_matrix(_Mat*, float, float, float, bool, char const*, int) [37] VIO_Resource::get_mem()
+  [25] vio_phys_addr(void const*, unsigned int) [43] log_row_normalise_inplace(_Mat*) [50] VIO_Resource::dma_init()
+  [17] dma_data_2_cpu(unsigned long long, unsigned long long, unsigned int) [4] flipflop_guppy_transitions(raw_table, float, guppy_model const*) [46] VIO_Resource::VIO_Resource()
+  [81] fprintf_format(flappie_outformat_type, _IO_FILE*, char const*, char const*, bool, char const*, _raw_basecall_info) [75] nbase_from_flipflop_nparam(unsigned int) [8] ekf_hw::mat_mul_mod(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)
+  [82] free_raw_table(raw_table*) [94] shift_scale_matrix_inplace(_Mat*, float, float) [7] ekf_hw::mat_mul(float const*, float const*, float const*, float*, unsigned int, unsigned int, unsigned int, bool, bool, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int)
+  [15] grumod_forward(_Mat const*, _Mat const*, _Mat*) [95] crf_manystay_partition_function(_Mat const*) [26] ekf_hw::ekf_hw()
+  [83] get_raw_scaling(int)    [5] flipflop_transitions_r941native(raw_table, float) [33] ekf_hw::~ekf_hw()
+  [14] grumod_backward(_Mat const*, _Mat const*, _Mat*) [96] __static_initialization_and_destruction_0(int, int) (vio.cpp) [69] AXI_Bus::configure(long, unsigned int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+  [84] trim_raw_by_mad(raw_table, unsigned int, float) [45] __static_initialization_and_destruction_0(int, int) (vio_priv.cpp) [70] AXI_Bus::AXI_Bus()
+  [85] change_positions(int const*, unsigned int, int*) [63] madf(float const*, unsigned int, float const*) [71] AXI_Bus::~AXI_Bus()
+  [86] features_from_raw(raw_table, int) [97] argmaxf(float const*, unsigned int) [100] VIO_Mem::get_instance()
+   [9] vio_read_register(Bus_Type, char const*, unsigned int, unsigned int) [62] medianf(float const*, unsigned int) [30] VIO_Mem::get_phys_addr(void const*, unsigned int)
+  [72] feedforward_linear(_Mat const*, _Mat const*, _Mat const*, _Mat*) [98] valmaxf(float const*, unsigned int) [101] VIO_Mem::delete_instance()
+  [20] vio_write_register(Bus_Type, char const*, unsigned int, unsigned int) [99] read_raw(char const*, bool) [31] VIO_Mem::get_mem(unsigned long long)
+  [87] decode_crf_flipflop(_Mat const*, bool, int*, float*) [61] quantilef(float const*, unsigned int, float*, unsigned int) [28] VIO_Mem::free_mem(void*)
+  [64] free_flappie_matrix(_Mat*) [58] logsumexpf(float, float) (util.h) [102] VIO_Mem::VIO_Mem()
+  [23] globalnorm_flipflop(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [40] logsumexpf(float, float) (util.h) [103] VIO_Mem::~VIO_Mem()
+  [24] globalnorm_manystay(_Mat const*, _Mat const*, _Mat const*, float, _Mat*) [2] calculate_post(char*, model_type) (flappie.cpp) [32] Mem_Pool::release(unsigned long long)
+  [66] make_flappie_matrix(unsigned int, unsigned int) [76] iceil(int, int) (util.h) [34] Mem_Pool::allocate(unsigned int)
+   [3] flipflop_transitions(raw_table, float, model_type) [65] ifloor(int, int) (util.h) [104] Mem_Pool::configure(unsigned int, unsigned long long, unsigned long long)
+  [78] free_flappie_imatrix(_iMat*) [59] logsumexp(double, double) (util.h) [105] Mem_Pool::Mem_Pool()
+  [79] make_flappie_imatrix(unsigned int, unsigned int) [11] VIO_Module::move_dma_2_hw(void const*, unsigned long long, unsigned int, bool) [106] Mem_Pool::~Mem_Pool()
+  [73] read_float_attribute(int, char const*) [16] VIO_Module::move_dma_2_cpu(unsigned long long, void*, unsigned int) [27] vio_free
+  [88] trace_from_posterior(_Mat*) [41] VIO_Module::VIO_Module() [29] vio_malloc
+  [89] trim_and_segment_raw(raw_table, unsigned int, unsigned int, unsigned int, float) [35] VIO_Module::~VIO_Module()
+  [90] read_string_attribute(int, char const*) [48] VIO_Resource::rd_dma_init()
