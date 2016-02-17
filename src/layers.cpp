@@ -14,10 +14,11 @@
 #include "flappie_stdlib.h"
 #include "util.h"
 
-#include "hw/ekf_hw.h"
-#include "ref_model/ekf_sw.h"
-#include "hw/vio_regs.h"
-#include "hw/vio_utils.h"
+//#include "hw/ekf_hw.h"
+//#include "ref_model/ekf_sw.h"
+//#include "hw/vio_regs.h"
+//#include "hw/vio_utils.h"
+//#include "stimuli_gen/matrix_generation.h"
 
 #define STREAMING_ENABLED 1
 
@@ -174,6 +175,125 @@ flappie_matrix window(const_flappie_matrix input, size_t w, size_t stride) {
  *  a multiple of the SSE vector size (4).  The filter matrix must have been
  *  expanded accordingly.
  **/
+flappie_matrix convolution_linear(const_flappie_matrix X, const_flappie_matrix W,
+                            const_flappie_matrix b, size_t stride,
+                            flappie_matrix C, const_flappie_matrix iW, const_flappie_matrix bG) {
+    RETURN_NULL_IF(NULL == X, NULL);
+    assert(NULL != W);
+    assert(NULL != b);
+    assert(W->nc == b->nr);
+    assert(stride > 0);
+    // Window length of filter
+    assert((W->nrq % X->nrq) == 0);
+    const size_t winlen = W->nrq / X->nrq;
+    const size_t nfilter = W->nc;
+    // Padding -- right-hand side is longer when asymmetric padding is required
+    const size_t padL = (winlen - 1) / 2;
+    const size_t padR = winlen / 2;
+    const size_t ncolC = iceil(X->nc, stride);
+    C = remake_flappie_matrix(C, nfilter, ncolC);
+    RETURN_NULL_IF(NULL == C, NULL);
+
+    // Matrix strides
+    const size_t ldC = C->stride;
+    const size_t ldW = W->stride;
+    // FIX padding disable changes
+    //const size_t ldX = X->stride; 
+    const size_t ldX = 1;
+    const size_t ldFeature = ldX;
+
+
+    /*#define VIO_EKF_CHOL_IN_BUFSIZE 128
+    float *res_cov    = (float *)vio_malloc(VIO_EKF_CHOL_IN_BUFSIZE);
+    float *result_cov    = (float *)vio_malloc(VIO_EKF_CHOL_IN_BUFSIZE);
+    float *lc_cov     = (float *)vio_malloc(VIO_EKF_MMUL_A_BUFSIZE);
+    float *gain_cov   = (float *)vio_malloc(VIO_EKF_MMUL_B_BUFSIZE);
+    float *cov_in    = (float *)vio_malloc(VIO_EKF_MMUL_C_BUFSIZE);
+    uint32_t gain_rows=4, gain_cols=4, gain_str=1, cov_in_str=1 ;*/
+    //ekf_sw sw;
+    //ekf_hw hw;
+    //sw.mat_mul_c(gain_cov,gain_cov,cov_in,gain_cols,gain_rows, gain_cols - 1, false, true, -1.0f, 1.0f, gain_str, gain_str, cov_in_str, cov_in, 0, 0);
+
+
+    //fprintf(stderr, "convolution xnr=%lu xnc=%lu wnr=%lu wnc=%lubnr=%lu bnc=%lu cnr=%lu cnc=%lu\n",X->nr, X->nc, W->nr, W->nc, b->nr, b->nc, C->nr, C->nc);
+    //fprintf(stderr, "wnrq=%lu xnrq=%lu windlen=%lu nfliter=%lu padr=%lu padl=%lu \n",W->nrq, X->nrq, winlen, nfilter, padR, padL);
+
+    // Copy bias into result matrix
+    for (size_t i = 0; i < C->nc; i++) {
+        memcpy(C->data.v + i * C->nrq, b->data.v, C->nrq * sizeof(__m128));
+    }
+
+    // Left-hand side edge case where only part of the filter covers the input
+    for (size_t w = 0; w < padL; w += stride) {
+        const size_t offsetW = ldFeature * (padL - w);
+        const size_t ncol = w / stride;
+	    //printf("1: Number of M=%lu N=%lu",W->nr - offsetW, W->nc);
+        cblas_sgemv(CblasColMajor, CblasTrans, W->nr - offsetW, W->nc,
+                    1.0, W->data.f + offsetW, ldW,
+                    X->data.f, 1, 1.0, C->data.f + ldC * ncol, 1);
+    }
+
+    // Number of columns of X already filled * ldC
+    const size_t ncolsL_complete = iceil(padL, stride);
+    const size_t offsetC_L = ldC * ncolsL_complete;
+    // Because of stride, first valid filter may not start at beginning of X
+    //const int shiftX_L = stride - (padL % stride);
+    const size_t shiftX_L = ncolsL_complete * stride - padL;
+    const size_t offsetX_L = shiftX_L * ldX;
+    // Find multiple of stride greater or equal to winlen
+    const size_t nstepC = iceil(winlen, stride);
+    const size_t nstepX = stride * nstepC;
+
+    for (size_t w = 0; w < winlen; w += stride) {
+        //  Multiply reshaped X matrix by filter matrix
+        //  The rows of X are padded by zeros to make a multiple of 4.
+        //  Input matrix 'X'
+        //   - stride is ldX * nstepX
+        //   - offset by ldX * w (w cols)
+        //   - Ncolumns is (X->nc - w) / nstepX + adjustment if a final window fits
+        //  Filter matrix needs to be padded appropriately for the padding of X.
+        //
+        const size_t ncol_processed = ifloor(X->nc - shiftX_L - w, nstepX);
+        const size_t initial_col = ifloor(w, stride);
+
+        //fprintf(stderr, "2: Number of M=%lu N=%lu K=%lu\n",W->nc,ncol_processed,W->nr);
+        //fprintf(stderr, "3.1: Offset in X is %lu\n", ldX * w + offsetX_L);
+        //fprintf(stderr, "3.2: Offset in C is %lu\n", ldC * initial_col + offsetC_L);
+        //fprintf(stderr, "4: Lda=%lu Ldb=%lu Ldc=%lu\n", ldW, ldX * nstepX, ldC * nstepC );
+        cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, W->nc,
+                    ncol_processed, W->nr, 1.0, W->data.f, ldW,
+                    X->data.f + ldX * w + offsetX_L, ldX * nstepX, 1.0,
+                    C->data.f + ldC * initial_col + offsetC_L, ldC * nstepC);
+    }
+
+    // Right-hand side edge case where only part of the filter covers the input
+    const size_t maxCol_reshape = ifloor(X->nc - shiftX_L, nstepX);
+    const size_t remainder_reshape = (X->nc - shiftX_L) % nstepX;
+    const size_t offsetC_R =
+        offsetC_L + ldC * nstepC * (maxCol_reshape - 1) +
+        ldC * (remainder_reshape / stride) + ldC;
+    const size_t offsetX_R = (X->nc - winlen + 1) * ldX;
+    // How far into padding is first block
+    const int startR = stride - (padL + X->nc - winlen) % stride - 1;
+    for (size_t w = startR; w < padR; w += stride) {
+        const size_t offsetW = ldFeature * (w + 1);
+	//printf("3: Number of M=%d N=%d\n",W->nr - offsetW, W->nc);
+        cblas_sgemv(CblasColMajor, CblasTrans, W->nr - offsetW, W->nc, 1.0,
+                    W->data.f, ldW,
+                    X->data.f + offsetX_R + ldX * w, 1, 1.0,
+                    C->data.f + offsetC_R + ldC * (w / stride), 1);
+    }
+
+    assert(validate_flappie_matrix
+           (C, NAN, NAN, 0.0, true, __FILE__, __LINE__));
+
+    tanh_activation_inplace(C);
+
+    flappie_matrix gruB1in = affine_map(C, iW, bG, NULL);
+
+    return gruB1in;
+}
+
 flappie_matrix convolution(const_flappie_matrix X, const_flappie_matrix W,
                             const_flappie_matrix b, size_t stride,
                             flappie_matrix C) {
@@ -285,6 +405,7 @@ flappie_matrix convolution(const_flappie_matrix X, const_flappie_matrix W,
 
     assert(validate_flappie_matrix
            (C, NAN, NAN, 0.0, true, __FILE__, __LINE__));
+
     return C;
 }
 
@@ -630,7 +751,197 @@ flappie_matrix grumod_forward(const_flappie_matrix X, const_flappie_matrix sW,
 }
 
 #if STREAMING_ENABLED
-void cblas_gemv_wrapper(const_flappie_matrix xCol, flappie_matrix xColTmp, const_flappie_matrix sW, flappie_matrix currState);
+void cblas_gemv_wrapper(const_flappie_matrix xCol, flappie_matrix xColTmp, const_flappie_matrix sW, flappie_matrix sCol1);
+
+flappie_matrix aes_grumod_linear( const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix ostate, int backward, const_flappie_matrix W, const_flappie_matrix b) {
+    RETURN_NULL_IF(NULL == X, NULL);
+    assert(NULL != sW);
+
+    const size_t size = sW->nr;
+    const size_t N = X->nc;
+    assert(X->nr == 3 * size);
+    assert(sW->nc == 3 * size);
+
+
+    ostate = remake_flappie_matrix(ostate, size, N);
+    flappie_matrix xColTmp = make_flappie_matrix(3 * size, 1);
+
+    _Mat xCol, sCol1, sCol2;
+    memset(ostate->data.v, 0, ostate->nrq * sizeof(__m128));
+    xCol = *X;
+    sCol1 = *ostate;
+    sCol2 = *ostate;
+    xCol.nc = sCol1.nc = sCol2.nc = 1;
+    if(backward) {
+      xCol.data.v = X->data.v + (X->nc - 1) * X->nrq;
+      sCol1.data.v = ostate->data.v;
+      sCol2.data.v = ostate->data.v + (ostate->nc - 1) * ostate->nrq;
+      grumod_step(&xCol, &sCol1, sW, xColTmp, &sCol2);
+    }
+    else {
+      sCol1.data.v = ostate->data.v + ostate->nrq;
+      sCol2.data.v = ostate->data.v;
+      grumod_step(&xCol, &sCol1, sW, xColTmp, &sCol2);
+    }
+
+
+    //float *Cin, *Cout, *A, *Bnext;
+    float Cin[768], Cout[768], A[256*768]; 
+    float *Bnext;
+
+    for (int i = 1; i < N; i++) {
+      #pragma HLS pipeline
+       	size_t index; 
+	// LOAD
+        {
+        	if(backward) {
+	   		index = N - i - 1;
+           		xCol.data.f = X->data.f + index * X->nr;
+           		sCol1.data.f = ostate->data.f + (index + 1) * ostate->nr;
+           		sCol2.data.f = ostate->data.f + index * ostate->nr;
+	}
+		else {
+	  	        index = i;
+           		xCol.data.f = X->data.f + index * X->nr;
+           		sCol1.data.f = ostate->data.f + (index - 1) * ostate->nr;
+           		sCol2.data.f = ostate->data.f + index * ostate->nr;
+		}
+    		//Cin = xCol.data.f; Cout = xColTmp->data.f;  A = sW->data.f; Bnext = sCol2.data.f;
+    		memcpy(Cin, xCol.data.f, 768*sizeof(float)); 
+		memcpy(Cout, xColTmp->data.f, 768*sizeof(float));  
+		memcpy(A, sW->data.f, 256*768*sizeof(float)); 
+		//memcpy(Bnext, sCol2.data.f, 256 * sizeof(float));
+		Bnext = sCol2.data.f; 
+        }
+
+        // COMPUTE
+        { 
+                //flappie_matrix Cin = &xCol; flappie_matrix Cout = xColTmp;  flappie_matrix A = sW; flappie_matrix Bnext = &sCol2;
+                float *B;
+                if(backward) B = Bnext + 256; //B is ostate
+                else B = Bnext - 256;
+        	const size_t size = 256;
+        	memcpy(Cout, Cin, 768 * sizeof(float) );
+        	memset(Cout + size + size, 0, size *sizeof(float));
+
+        	cblas_sgemv(CblasColMajor, CblasTrans, 256, 768, 1.0, A, 256, B, 1, 1.0, Cout, 1);
+        	//cblas_sgemv(CblasRowMajor, CblasNoTrans, 768, 256, 1.0, A, 768, B, 1, 1.0, Cout, 1);
+
+        	for (size_t i = 0; i < size; i++) {
+                	Cout[i] = LOGISTICF(Cout[i]); 
+                	Cout[size+i] = LOGISTICF(Cout[size+i]); 
+                	Cout[i+size+size] = TANHF(Cout[i+size] * Cout[i+size+size] + Cin[i+size+size]); 
+                	Bnext[i] = (-1) * Cout[i] * Cout[i+size+size] + Cout[i+size+size]; 
+                	Bnext[i] = Cout[i] * B[i] + Bnext[i];
+        	}
+	}
+
+	// STORE
+        {
+	}
+    }
+    xColTmp = free_flappie_matrix(xColTmp);
+    assert(validate_flappie_matrix (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
+
+    if(backward != 2) {
+	flappie_matrix gruin = feedforward_linear(ostate, W, b, NULL);
+	return gruin;
+    }	
+    else  
+       return ostate;
+}
+
+flappie_matrix aes_grumod( const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix ostate, bool backward) {
+    RETURN_NULL_IF(NULL == X, NULL);
+    assert(NULL != sW);
+
+    const size_t size = sW->nr;
+    const size_t N = X->nc;
+    assert(X->nr == 3 * size);
+    assert(sW->nc == 3 * size);
+
+
+    ostate = remake_flappie_matrix(ostate, size, N);
+    flappie_matrix xColTmp = make_flappie_matrix(3 * size, 1);
+
+    _Mat xCol, sCol1, sCol2;
+    memset(ostate->data.v, 0, ostate->nrq * sizeof(__m128));
+    xCol = *X;
+    sCol1 = *ostate;
+    sCol2 = *ostate;
+    xCol.nc = sCol1.nc = sCol2.nc = 1;
+    if(backward) {
+      xCol.data.v = X->data.v + (X->nc - 1) * X->nrq;
+      sCol1.data.v = ostate->data.v;
+      sCol2.data.v = ostate->data.v + (ostate->nc - 1) * ostate->nrq;
+      grumod_step(&xCol, &sCol1, sW, xColTmp, &sCol2);
+    }
+    else {
+      sCol1.data.v = ostate->data.v + ostate->nrq;
+      sCol2.data.v = ostate->data.v;
+      grumod_step(&xCol, &sCol1, sW, xColTmp, &sCol2);
+    }
+
+
+    //float *Cin, *Cout, *A, *Bnext;
+    float Cin[768], Cout[768], A[256*768]; 
+    float *Bnext;
+
+    for (int i = 1; i < N; i++) {
+      #pragma HLS pipeline
+       	size_t index; 
+	// LOAD
+        {
+        	if(backward) {
+	   		index = N - i - 1;
+           		xCol.data.f = X->data.f + index * X->nr;
+           		sCol1.data.f = ostate->data.f + (index + 1) * ostate->nr;
+           		sCol2.data.f = ostate->data.f + index * ostate->nr;
+	}
+		else {
+	  	        index = i;
+           		xCol.data.f = X->data.f + index * X->nr;
+           		sCol1.data.f = ostate->data.f + (index - 1) * ostate->nr;
+           		sCol2.data.f = ostate->data.f + index * ostate->nr;
+		}
+    		//Cin = xCol.data.f; Cout = xColTmp->data.f;  A = sW->data.f; Bnext = sCol2.data.f;
+    		memcpy(Cin, xCol.data.f, 768*sizeof(float)); 
+		memcpy(Cout, xColTmp->data.f, 768*sizeof(float));  
+		memcpy(A, sW->data.f, 256*768*sizeof(float)); 
+		//memcpy(Bnext, sCol2.data.f, 256 * sizeof(float));
+		Bnext = sCol2.data.f; 
+        }
+
+        // COMPUTE
+        { 
+                //flappie_matrix Cin = &xCol; flappie_matrix Cout = xColTmp;  flappie_matrix A = sW; flappie_matrix Bnext = &sCol2;
+                float *B;
+                if(backward) B = Bnext + 256; //B is ostate
+                else B = Bnext - 256;
+        	const size_t size = 256;
+        	memcpy(Cout, Cin, 768 * sizeof(float) );
+        	memset(Cout + size + size, 0, size *sizeof(float));
+
+        	cblas_sgemv(CblasColMajor, CblasTrans, 256, 768, 1.0, A, 256, B, 1, 1.0, Cout, 1);
+        	//cblas_sgemv(CblasRowMajor, CblasNoTrans, 768, 256, 1.0, A, 768, B, 1, 1.0, Cout, 1);
+
+        	for (size_t i = 0; i < size; i++) {
+                	Cout[i] = LOGISTICF(Cout[i]); 
+                	Cout[size+i] = LOGISTICF(Cout[size+i]); 
+                	Cout[i+size+size] = TANHF(Cout[i+size] * Cout[i+size+size] + Cin[i+size+size]); 
+                	Bnext[i] = (-1) * Cout[i] * Cout[i+size+size] + Cout[i+size+size]; 
+                	Bnext[i] = Cout[i] * B[i] + Bnext[i];
+        	}
+	}
+
+	// STORE
+        {
+	}
+    }
+    xColTmp = free_flappie_matrix(xColTmp);
+    assert(validate_flappie_matrix (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
+    return ostate;
+}
 
 flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
                                 flappie_matrix ostate) {
@@ -643,30 +954,42 @@ flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
     assert(sW->nc == 3 * size);
 
     ostate = remake_flappie_matrix(ostate, size, N);
-    RETURN_NULL_IF(NULL == ostate, NULL);
 
-
-    _Mat xCol, currState, nextState;
+    _Mat xCol, sCol1, sCol2;
     memset(ostate->data.v, 0, ostate->nrq * sizeof(__m128));
     xCol = *X;
-    currState = *ostate;
-    nextState = *ostate;
-    xCol.nc = currState.nc = nextState.nc = 1;
+    sCol1 = *ostate;
+    sCol2 = *ostate;
+    xCol.nc = sCol1.nc = sCol2.nc = 1;
     xCol.data.v = X->data.v + (X->nc - 1) * X->nrq;
-    currState.data.v = ostate->data.v;
-    nextState.data.v = ostate->data.v + (ostate->nc - 1) * ostate->nrq;
+    sCol1.data.v = ostate->data.v;
+    sCol2.data.v = ostate->data.v + (ostate->nc - 1) * ostate->nrq;
 
     flappie_matrix xColTmp = make_flappie_matrix(3 * size, 1);
-    if(NULL == xColTmp)
-        return NULL;
-    grumod_step(&xCol, &currState, sW, xColTmp, &nextState);
 
     for (int i = 1; i < N; i++) {
         const size_t index = N - i - 1;
         xCol.data.f = X->data.f + index * X->nr;
-        currState.data.f = ostate->data.f + (index + 1) * ostate->nr;
-        nextState.data.f = ostate->data.f + index * ostate->nr;
-        cblas_gemv_wrapper(&xCol, xColTmp, sW, &nextState);
+        sCol1.data.f = ostate->data.f + (index + 1) * ostate->nr;
+        sCol2.data.f = ostate->data.f + index * ostate->nr;
+        //cblas_gemv_wrapper(&xCol, xColTmp, sW, &sCol2);
+        { 
+                flappie_matrix Cin = &xCol; flappie_matrix Cout = xColTmp;  flappie_matrix A = sW; flappie_matrix Bnext = &sCol2;
+        	float *B = Bnext->data.f + Bnext->nr;
+        	const size_t size = Bnext->nr;
+        	memcpy(Cout->data.f, Cin->data.f, Cin->nr * sizeof(float) );
+        	memset(Cout->data.f + size + size, 0, size *sizeof(float));
+
+        	cblas_sgemv(CblasColMajor, CblasTrans, A->nr, A->nc, 1.0, A->data.f, A->stride, B, 1, 1.0, Cout->data.f, 1);
+
+        	for (size_t i = 0; i < size; i++) {
+                	Cout->data.f[i] = LOGISTICF(Cout->data.f[i]); 
+                	Cout->data.f[size+i] = LOGISTICF(Cout->data.f[size+i]); 
+                	Cout->data.f[i+size+size] = TANHF(Cout->data.f[i+size] * Cout->data.f[i+size+size] + Cin->data.f[i+size+size]); 
+                	Bnext->data.f[i] = (-1) * Cout->data.f[i] * Cout->data.f[i+size+size] + Cout->data.f[i+size+size]; 
+                	Bnext->data.f[i] = Cout->data.f[i] * B[i] + Bnext->data.f[i];
+        	}
+	}
     }
     xColTmp = free_flappie_matrix(xColTmp);
     assert(validate_flappie_matrix (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
@@ -678,30 +1001,11 @@ static int data_available=0;
 void cblas_gemv_wrapper(const_flappie_matrix Cin, flappie_matrix Cout, const_flappie_matrix A, flappie_matrix Bnext) {
 
         float *B = Bnext->data.f + Bnext->nr;
-        ekf_hw hw;
         const size_t size = Bnext->nr;
         memcpy(Cout->data.f, Cin->data.f, Cin->nr * sizeof(float) );
         memset(Cout->data.f + size + size, 0, size *sizeof(float));
 
-        // Cin has 3 chunks of update, reset and output gate of size=256 each. The second part of update and reset gate coming from cin.
-        //cblas_sgemv(CblasColMajor, CblasTrans, A->nr, A->nc, 1.0, A->data.f, A->stride, B, 1, 1.0, Cout->data.f, 1);
-        float *a1 = (float *) vio_malloc(A->nr * A->nc *sizeof(float)); //256x768
-        float *b1 = (float *) vio_malloc(Bnext->nr * Bnext->nc * sizeof(float)); // 256x1
-    	float *c1 = (float *) vio_malloc(Cin->nr * Cin->nc * sizeof(float)); // 768x1
-    	memcpy(a1, A->data.f, A->nr * A->nc * sizeof(float));
-    	memcpy(b1, Bnext->data.f, Bnext->nr * Bnext->nc * sizeof(float));
-    	memcpy(c1, Cin->data.f, Cin->nr * Cin->nc * sizeof(float));
-
-    	if(!data_available) {
-        	hw.mat_mul(a1,b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
-        	data_available = 1;
-   	}
-   	else {
-        	hw.mat_mul(NULL, b1,c1,c1, 768, 256, 1, 0,0, 1.0, 0.0, 256, 4, 4, 0,0,0);
-    	}
-
-
-    	memcpy(Cin->data.f, c1, Cin->nr * Cin->nc * sizeof(float));
+        cblas_sgemv(CblasColMajor, CblasTrans, A->nr, A->nc, 1.0, A->data.f, A->stride, B, 1, 1.0, Cout->data.f, 1);
 
         for (size_t i = 0; i < size; i++) {
                 Cout->data.f[i] = LOGISTICF(Cout->data.f[i]); // UPDATE gate z(t)
@@ -710,10 +1014,6 @@ void cblas_gemv_wrapper(const_flappie_matrix Cin, flappie_matrix Cout, const_fla
                 Bnext->data.f[i] = (-1) * Cout->data.f[i] * Cout->data.f[i+size+size] + Cout->data.f[i+size+size];  // O(t) part 2
                 Bnext->data.f[i] = Cout->data.f[i] * B[i] + Bnext->data.f[i];  // O(t) part 1
         }
-
-    	vio_free(a1);
-    	vio_free(b1);
-    	vio_free(c1); 
 
 }
 #else 
@@ -804,7 +1104,7 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
      * xF     is [3 * size]
      * ostate is [size]
      */
-    ekf_hw hw;
+    //ekf_hw hw;
     assert(NULL != x);
     assert(NULL != sW);
     const size_t size = istate->nr;

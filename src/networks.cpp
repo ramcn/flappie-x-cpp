@@ -242,76 +242,23 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     //flappie_matrix raw_mat = features_from_raw(signal, 4);
     flappie_matrix raw_mat = features_from_raw(signal, 0);
 
-    gettimeofday(&start, NULL);
-
-    flappie_matrix conv =
-        convolution(raw_mat, net->conv_W, net->conv_b, net->conv_stride, NULL);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing convolution): %ld msec\n", mseconds );
-
-    tanh_activation_inplace(conv);
+    flappie_matrix conv = convolution_linear(raw_mat, net->conv_W, net->conv_b, net->conv_stride, NULL, net->gruB1_iW, net->gruB1_b);
     raw_mat = free_flappie_matrix(raw_mat);
 
-    //  First GRU layer
-    gettimeofday(&start, NULL);
-    flappie_matrix gruB1in = feedforward_linear(conv, net->gruB1_iW, net->gruB1_b, NULL);
+    flappie_matrix gruB1 = aes_grumod_linear(conv, net->gruB1_sW, NULL, 1, net->gruF2_iW, net->gruF2_b );
     conv = free_flappie_matrix(conv);
-    flappie_matrix gruB1 = grumod_backward(gruB1in, net->gruB1_sW, NULL);
-    gruB1in = free_flappie_matrix(gruB1in);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing 1 GRU): %ld msec\n", mseconds );
 
-    //  Second GRU layer
-    gettimeofday(&start, NULL);
-    flappie_matrix gruF2in = feedforward_linear(gruB1, net->gruF2_iW, net->gruF2_b, NULL);
+    flappie_matrix gruF2 = aes_grumod_linear(gruB1, net->gruF2_sW, NULL, 0, net->gruB3_iW, net->gruB3_b );
     gruB1 = free_flappie_matrix(gruB1);
-    flappie_matrix gruF2 = grumod_forward(gruF2in, net->gruF2_sW, NULL);
-    gruF2in = free_flappie_matrix(gruF2in);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing 2 GRU): %ld msec\n", mseconds );
 
-    //  Third GRU layer
-    gettimeofday(&start, NULL);
-    flappie_matrix gruB3in = feedforward_linear(gruF2, net->gruB3_iW, net->gruB3_b, NULL);
+    flappie_matrix gruB3 = aes_grumod_linear(gruF2, net->gruB3_sW, NULL, 1, net->gruF4_iW, net->gruF4_b);
     gruF2 = free_flappie_matrix(gruF2);
-    flappie_matrix gruB3 = grumod_backward(gruB3in, net->gruB3_sW, NULL);
-    gruB3in = free_flappie_matrix(gruB3in);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing 3 GRU): %ld msec\n", mseconds );
-    //  Fourth GRU layer
-    gettimeofday(&start, NULL);
-    flappie_matrix gruF4in = feedforward_linear(gruB3, net->gruF4_iW, net->gruF4_b, NULL);
+
+    flappie_matrix gruF4 = aes_grumod_linear(gruB3, net->gruF4_sW, NULL, 0, net->gruB5_iW, net->gruB5_b);
     gruB3 = free_flappie_matrix(gruB3);
-    flappie_matrix gruF4 = grumod_forward(gruF4in, net->gruF4_sW, NULL);
-    gruF4in = free_flappie_matrix(gruF4in);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing 4 GRU): %ld msec\n", mseconds );
-    //  Fifth GRU layer
-    gettimeofday(&start, NULL);
-    flappie_matrix gruB5in = feedforward_linear(gruF4, net->gruB5_iW, net->gruB5_b, NULL);
+
+    flappie_matrix gruB5 = aes_grumod_linear(gruF4, net->gruB5_sW, NULL, 2, net->gruB5_iW, net->gruB5_b);
     gruF4 = free_flappie_matrix(gruF4);
-    flappie_matrix gruB5 = grumod_backward(gruB5in, net->gruB5_sW, NULL);
-    gruB5in = free_flappie_matrix(gruB5in);
-    gettimeofday(&end_time, NULL);
-    useconds = end_time.tv_usec - start.tv_usec;
-    seconds = end_time.tv_sec - start.tv_sec;
-    mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    //fprintf(stderr,"Time elapsed (doing 5 GRU): %ld msec\n", mseconds );
 
     flappie_matrix trans = globalnorm_flipflop(gruB5, net->FF_W, net->FF_b, temperature, NULL);
     gruB5 = free_flappie_matrix(gruB5);

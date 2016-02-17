@@ -21,9 +21,9 @@ void robustlog_activation_inplace(flappie_matrix C, float min_prob);
 flappie_matrix embedding(int const * index, size_t n, const_flappie_matrix E,
                           flappie_matrix C);
 flappie_matrix window(const_flappie_matrix input, size_t w, size_t stride);
-flappie_matrix convolution(const_flappie_matrix X, const_flappie_matrix W,
-                            const_flappie_matrix b, size_t stride,
-                            flappie_matrix C);
+flappie_matrix convolution_linear(const_flappie_matrix X, const_flappie_matrix W, const_flappie_matrix b, size_t stride, flappie_matrix C,
+				const_flappie_matrix iW, const_flappie_matrix bG);
+flappie_matrix convolution(const_flappie_matrix X, const_flappie_matrix W, const_flappie_matrix b, size_t stride, flappie_matrix C);
 flappie_matrix feedforward_linear(const_flappie_matrix X,
                                    const_flappie_matrix W,
                                    const_flappie_matrix b, flappie_matrix C);
@@ -58,8 +58,12 @@ void gru_step(const_flappie_matrix x, const_flappie_matrix istate,
 
 flappie_matrix grumod_forward(const_flappie_matrix X, const_flappie_matrix sW,
                                flappie_matrix res);
-flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW,
-                                flappie_matrix res);
+flappie_matrix grumod_backward(const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix res);
+
+flappie_matrix aes_grumod_linear(const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix ostate, int backward, const_flappie_matrix W, const_flappie_matrix b);
+
+flappie_matrix aes_grumod(const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix ostate, bool backward);
+
 void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
                  const_flappie_matrix sW, flappie_matrix xF,
                  flappie_matrix ostate);
