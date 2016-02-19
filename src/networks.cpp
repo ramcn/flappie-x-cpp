@@ -257,7 +257,8 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     flappie_matrix gruF4 = aes_grumod_linear(gruB3, net->gruF4_sW, NULL, 0, net->gruB5_iW, net->gruB5_b);
     gruB3 = free_flappie_matrix(gruB3);
 
-    flappie_matrix gruB5 = aes_grumod_linear(gruF4, net->gruB5_sW, NULL, 2, net->gruB5_iW, net->gruB5_b);
+    //flappie_matrix gruB5 = aes_grumod_linear(gruF4, net->gruB5_sW, NULL, 2, net->gruB5_iW, net->gruB5_b);
+    flappie_matrix gruB5 = aes_grumod(gruF4, net->gruB5_sW, NULL, 1);
     gruF4 = free_flappie_matrix(gruF4);
 
     flappie_matrix trans = globalnorm_flipflop(gruB5, net->FF_W, net->FF_b, temperature, NULL);

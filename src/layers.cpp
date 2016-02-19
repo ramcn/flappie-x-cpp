@@ -784,6 +784,11 @@ flappie_matrix aes_grumod_linear( const_flappie_matrix X, const_flappie_matrix s
       grumod_step(&xCol, &sCol1, sW, xColTmp, &sCol2);
     }
 
+    flappie_matrix C = remake_flappie_matrix(NULL, W->nc, ostate->nc);
+    RETURN_NULL_IF(NULL == C, NULL);
+    for (size_t c = 0; c < C->nc; c++) {
+        memcpy(C->data.v + c * C->nrq, b->data.v, C->nrq * sizeof(__m128));
+    }
 
     //float *Cin, *Cout, *A, *Bnext;
     float Cin[768], Cout[768], A[256*768]; 
@@ -834,6 +839,17 @@ flappie_matrix aes_grumod_linear( const_flappie_matrix X, const_flappie_matrix s
                 	Bnext[i] = (-1) * Cout[i] * Cout[i+size+size] + Cout[i+size+size]; 
                 	Bnext[i] = Cout[i] * B[i] + Bnext[i];
         	}
+    		sCol2.nr = C->nr;
+                if(backward) {
+    			//sCol1.data.f = ostate->data.f + (index+1) * ostate->nr;
+       			sCol2.data.f = C->data.f + (index+1) * C->nr;
+		}else {
+    			//sCol1.data.f = ostate->data.f + (index-1) * ostate->nr;
+       			sCol2.data.f = C->data.f + (index-1) * C->nr;
+		}
+        	//cblas_sgemv(CblasColMajor, CblasTrans, W->nr, W->nc, 1.0, W->data.f, W->stride, sCol1.data.f, 1, 1.0, sCol2.data.f, 1);
+        	//cblas_sgemv(CblasColMajor, CblasTrans, W->nr, W->nc, 1.0, W->data.f, W->stride, B, 1, 1.0, sCol2.data.f, 1);
+        	cblas_sgemv(CblasColMajor, CblasTrans, W->nr, W->nc, 1.0, W->data.f, W->stride, Bnext, 1, 1.0, sCol2.data.f, 1);
 	}
 
 	// STORE
@@ -843,12 +859,21 @@ flappie_matrix aes_grumod_linear( const_flappie_matrix X, const_flappie_matrix s
     xColTmp = free_flappie_matrix(xColTmp);
     assert(validate_flappie_matrix (ostate, -1.0, 1.0, 0.0, true, __FILE__, __LINE__));
 
-    if(backward != 2) {
-	flappie_matrix gruin = feedforward_linear(ostate, W, b, NULL);
-	return gruin;
-    }	
-    else  
-       return ostate;
+    //flappie_matrix C = feedforward_linear(ostate, W, b, NULL);
+
+    //fprintf(stderr, "%d %d %d\n", W->nc, W->nr, W->stride);
+    //cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans, W->nc, ostate->nc, W->nr, 1.0, W->data.f, W->stride, ostate->data.f, ostate->stride, 1.0, C->data.f, C->stride); 
+
+    /*int i;
+    sCol2.nr = C->nr;
+
+    for(i=1 ; i<N; i++) { 
+    	sCol1.data.f = ostate->data.f + (i-1) * ostate->nr;
+       	sCol2.data.f = C->data.f + (i-1) * C->nr;
+        cblas_sgemv(CblasColMajor, CblasTrans, W->nr, W->nc, 1.0, W->data.f, W->stride, sCol1.data.f, 1, 1.0, sCol2.data.f, 1);
+    }*/
+
+    return C;
 }
 
 flappie_matrix aes_grumod( const_flappie_matrix X, const_flappie_matrix sW, flappie_matrix ostate, bool backward) {

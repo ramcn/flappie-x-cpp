@@ -75,7 +75,7 @@ endif()
 
 
 set(CMAKE_ARM_FLAGS "-mfloat-abi=hard -mfpu=neon")
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -Wfatal-errors -DUSE_SSE2 -mfloat-abi=softfp -mfpu=neon  -Wunused-function -Wunused-value -Wunused-parameter -fstack-protector-all  -O3   -D__USE_MISC -D_POSIX_SOURCE -DNDEBUG")
+set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -g -Wfatal-errors -DUSE_SSE2 -mfloat-abi=softfp -mfpu=neon  -Wunused-function -Wunused-value -Wunused-parameter -fstack-protector-all  -O3   -D__USE_MISC -D_POSIX_SOURCE -DNDEBUG")
 
 
 ##
