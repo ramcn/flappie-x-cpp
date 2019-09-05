@@ -250,7 +250,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing convolution): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing convolution): %ld msec\n", mseconds );
 
     tanh_activation_inplace(conv);
     raw_mat = free_flappie_matrix(raw_mat);
@@ -265,7 +265,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing 1 GRU): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing 1 GRU): %ld msec\n", mseconds );
 
     //  Second GRU layer
     gettimeofday(&start, NULL);
@@ -277,7 +277,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing 2 GRU): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing 2 GRU): %ld msec\n", mseconds );
 
     //  Third GRU layer
     gettimeofday(&start, NULL);
@@ -289,7 +289,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing 3 GRU): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing 3 GRU): %ld msec\n", mseconds );
     //  Fourth GRU layer
     gettimeofday(&start, NULL);
     flappie_matrix gruF4in = feedforward_linear(gruB3, net->gruF4_iW, net->gruF4_b, NULL);
@@ -300,7 +300,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing 4 GRU): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing 4 GRU): %ld msec\n", mseconds );
     //  Fifth GRU layer
     gettimeofday(&start, NULL);
     flappie_matrix gruB5in = feedforward_linear(gruF4, net->gruB5_iW, net->gruB5_b, NULL);
@@ -311,7 +311,7 @@ flappie_matrix flipflop_guppy_transitions(const raw_table signal, float temperat
     useconds = end_time.tv_usec - start.tv_usec;
     seconds = end_time.tv_sec - start.tv_sec;
     mseconds = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-    fprintf(stderr,"Time elapsed (doing 5 GRU): %ld msec\n", mseconds );
+    //fprintf(stderr,"Time elapsed (doing 5 GRU): %ld msec\n", mseconds );
 
     flappie_matrix trans = globalnorm_flipflop(gruB5, net->FF_W, net->FF_b, temperature, NULL);
     gruB5 = free_flappie_matrix(gruB5);

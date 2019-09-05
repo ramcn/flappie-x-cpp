@@ -330,7 +330,7 @@ int main(int argc, char * argv[]){
             reads_started += 1;
 
             char * filename = globbuf.gl_pathv[fn2];
-	    fprintf(stderr,"basecalling %s\n",filename);
+	    //fprintf(stderr,"basecalling %s\n",filename);
             struct _raw_basecall_info res = calculate_post(filename, args.model);
             if(NULL == res.basecall){
                 warnx("No basecall returned for %s", filename);

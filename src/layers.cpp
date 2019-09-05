@@ -14,10 +14,10 @@
 #include "flappie_stdlib.h"
 #include "util.h"
 
-#include "hw/ekf_hw.h"
-#include "ref_model/ekf_sw.h"
-#include "hw/vio_regs.h"
-#include "hw/vio_utils.h"
+//#include "hw/ekf_hw.h"
+//#include "ref_model/ekf_sw.h"
+//#include "hw/vio_regs.h"
+//#include "hw/vio_utils.h"
 
 
 /**  Apply tanh to a matrix element-wise
@@ -208,8 +208,8 @@ flappie_matrix convolution(const_flappie_matrix X, const_flappie_matrix W,
     float *gain_cov   = (float *)vio_malloc(VIO_EKF_MMUL_B_BUFSIZE);
     float *cov_in    = (float *)vio_malloc(VIO_EKF_MMUL_C_BUFSIZE);
     uint32_t gain_rows=4, gain_cols=4, gain_str=1, cov_in_str=1 ;*/
-    ekf_sw sw;
-    ekf_hw hw;
+    //ekf_sw sw;
+    //ekf_hw hw;
     //sw.mat_mul_c(gain_cov,gain_cov,cov_in,gain_cols,gain_rows, gain_cols - 1, false, true, -1.0f, 1.0f, gain_str, gain_str, cov_in_str, cov_in, 0, 0);
 
 
@@ -746,7 +746,6 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
       PrintMatrix(xF->data.f, xF->nr, xF->nc, CblasColMajor);
     }
 
-    cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
 
     /*int i;
     for(i=0 ; i<6; i++) { 
@@ -787,11 +786,33 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     vio_free(b);
     vio_free(c); */
 
-    for (size_t i = 0; i < (sizeq + sizeq); i++) {
-        xF->data.v[i] = LOGISTICFV(xF->data.v[i]);
+    cblas_sgemv(CblasColMajor, CblasTrans, sW->nr, sW->nc, 1.0, sW->data.f, sW->stride, istate->data.f, 1, 1.0, xF->data.f, 1);
+
+    for (size_t i = 0; i < (size + size); i++) {
+        xF->data.f[i] = LOGISTICF(xF->data.f[i]);
     }
 
-    const __m128 *z = xF->data.v;
+    const float *z = xF->data.f;
+    const float *r = xF->data.f + size;
+    float *hbar = xF->data.f + size + size;
+    float *c =  x->data.f + size + size;
+
+
+    for (size_t i = 0; i < size; i++) {
+        hbar[i] = r[i] * hbar[i] + x->data.f[size + size + i];
+    }
+
+    for (size_t i = 0; i < size; i++) {
+        hbar[i] = TANHF(hbar[i]);
+    }
+
+    const float ones = 1.0f;
+
+    for (size_t i = 0; i < size ; i++) {
+        ostate->data.f[i] = z[i] * istate->data.f[i] + (ones - z[i]) * hbar[i];
+    }
+
+    /* const __m128 *z = xF->data.v;
     const __m128 *r = xF->data.v + sizeq;
     __m128 *hbar = xF->data.v + sizeq + sizeq;
     for (size_t i = 0; i < sizeq; i++) {
@@ -804,7 +825,7 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     const __m128 ones = _mm_set1_ps(1.0f);
     for (size_t i = 0; i < sizeq ; i++) {
         ostate->data.v[i] = z[i] * istate->data.v[i] + (ones - z[i]) * hbar[i];
-    }
+    } */
 }
 
 

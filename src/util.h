@@ -16,6 +16,9 @@
 #    include <stdint.h>
 #    include "sse_mathfun.h"
 
+#    define LOGISTICF fast_logisticf
+#    define TANHF fast_tanhf
+
 #    ifdef FAST_LOG
 #        define LOGFV fast_logfv
 #    else

@@ -301,7 +301,7 @@ void ekf_hw::mat_mul_mod(const float *a_rm, const float *b_cm, const float *c_in
                          const uint32_t a_buf, const uint32_t b_buf, const uint32_t c_buf, const uint32_t y_buf,
                          uint32_t a_t, uint32_t b_t, uint32_t c_t)
 {
-#define PROFILE_START(x) \
+/*#define PROFILE_START(x) \
     struct timeval pr_##x##_start, pr_##x##_end; \
     gettimeofday(&pr_##x##_start, NULL);
 
@@ -310,7 +310,7 @@ void ekf_hw::mat_mul_mod(const float *a_rm, const float *b_cm, const float *c_in
 #define PROFILE_REPORT(x)  \
     printf("%-24s : %5lld\n", #x, (int64_t)(pr_##x##_end.tv_usec - pr_##x##_start.tv_usec) \
            + ((int64_t)(pr_##x##_end.tv_sec - pr_##x##_start.tv_sec) * 1000 * 1000))
-
+*/
 
     PRINTF("update_cov::m_size = %d, n_size = %d, p_size = %d, a_trans = %d, b_trans = %d, a_stride = %d, b_stride = %d, c_stride = %d\n",
            m_size, n_size, p_size, a_trans, b_trans, a_stride, b_stride, c_stride);
