@@ -793,23 +793,28 @@ void grumod_step(const_flappie_matrix x, const_flappie_matrix istate,
     }
 
     const float *z = xF->data.f;
-    const float *r = xF->data.f + size;
-    float *hbar = xF->data.f + size + size;
+    const float *a = xF->data.f + size;
+    float *b = xF->data.f + size + size;
     float *c =  x->data.f + size + size;
 
 
     for (size_t i = 0; i < size; i++) {
-        hbar[i] = r[i] * hbar[i] + x->data.f[size + size + i];
+        c[i] = a[i] * b[i] + c[i]; // cin and cout are same and below tanh will be done in place
+        //hbar[i] = r[i] * hbar[i] + x->data.f[size + size + i];
     }
 
     for (size_t i = 0; i < size; i++) {
-        hbar[i] = TANHF(hbar[i]);
+        c[i] = TANHF(c[i]);
+        //hbar[i] = TANHF(hbar[i]);
     }
 
     const float ones = 1.0f;
+    float *c1 = ostate->data.f; 
 
     for (size_t i = 0; i < size ; i++) {
-        ostate->data.f[i] = z[i] * istate->data.f[i] + (ones - z[i]) * hbar[i];
+        c1[i] = (-1) * z[i] * c[i] + c[i]; // cin and cout are different. alpha is -1.
+        c1[i] = z[i] * istate->data.f[i] + c1[i]; // cin and cout are same. 
+        //ostate->data.f[i] = z[i] * istate->data.f[i] + (ones - z[i]) * hbar[i];
     }
 
     /* const __m128 *z = xF->data.v;
